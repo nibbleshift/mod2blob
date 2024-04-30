@@ -72,7 +72,12 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 
 	pkg.Name = packageName
 	pkg.Prefix = prefix
-	pkg.parseDoc()
+
+	err = pkg.parseDoc()
+
+	if err != nil {
+		return nil, err
+	}
 
 	return pkg, nil
 }
