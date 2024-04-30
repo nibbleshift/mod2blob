@@ -1,0 +1,47 @@
+package bloblang
+
+{{- $moduleName := .Name -}}
+import (
+	"log"
+
+	"{{.Name}}"
+	"github.com/benthosdev/benthos/v4/public/bloblang"
+)
+
+func init() {
+{{ range .Functions }}
+	{{- $nArgs := len .Args -}}
+	{{- if gt $nArgs 0 -}}
+	{{- $funcName := .Name }}
+	object{{.Name}}Spec := bloblang.NewPluginSpec().
+		Param(bloblang.NewStringParam("text"))
+
+	err := bloblang.RegisterFunctionV2("{{.Name}}", object{{.Name}}Spec, func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+		{{- $argStr := "" -}}
+		{{- range .Args -}}
+		{{- if eq $argStr "" -}}
+		{{ $argStr = (printf "%s" .Name) }}
+		{{ else }}
+		{{ $argStr = (printf "%s, %s" $argStr .Name) }}
+		{{- end -}}
+		{{.Name}}, err := args.Get{{ .Type }}("{{ .Name }}")
+		if err != nil {
+			return nil, err
+		}
+		{{ end -}}
+
+		return func() (interface{}, error) {
+			value, err := {{$moduleName}}.{{$funcName}}({{ $argStr }})
+
+			if err != nil {
+				log.Fatal(err)
+			}
+			return value, nil
+		}, nil
+	})
+	{{ end }}
+{{- end }}
+	if err != nil {
+		panic(err)
+	}
+}
