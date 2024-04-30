@@ -120,20 +120,33 @@ func parseFunction(def string) (*Function, error) {
 		nArgs := len(argStrList)
 		argType := ""
 
-		for i := nArgs - 1; i != 0; i-- {
+		for i := nArgs - 1; i != -1; i-- {
 			if argType == "" && argObjList[i].Type != "" {
 				argType = argObjList[i].Type
 				continue
 			}
-			argObjList[i].Type = argType
+
+			if argObjList[i].Type == "" {
+				argObjList[i].Type = argType
+			}
 		}
 
 	}
 
-	returnString := strings.Join(strings.Split(strings.Join(fields[1:], ""), ")")[1:], "")
+	returnString := strings.Trim(strings.Join(strings.Split(strings.Join(fields[1:], ""), ")")[1:], ""), " ")
 	if len(returnString) != 0 {
-		if strings.Contains(returnString, "(") && strings.Contains(returnString, ")") {
-			_ = Arg{Type: strings.Trim(argsStrList[1], " ")}
+		if strings.Contains(returnString, ",") {
+			argStrings := strings.Split(returnString, ",")
+			for _, argString := range argStrings {
+				argString = strings.Trim(argString, " ")
+				if strings.Contains(argString, " ") {
+					parts := strings.Split(argString, " ")
+					f.Return = append(f.Return, Arg{Name: parts[1], Type: parts[0]})
+				} else {
+					f.Return = append(f.Return, Arg{Type: argString})
+
+				}
+			}
 		} else {
 			f.Return = []Arg{}
 			f.Return = append(f.Return, Arg{Type: strings.Trim(returnString, " ")})

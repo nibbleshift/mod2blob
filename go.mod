@@ -3,6 +3,7 @@ module github.com/nibbleshift/mod2blob
 go 1.22.2
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/nibbleshift/argenv v0.7.2
 	gotest.tools/v3 v3.5.1
 )

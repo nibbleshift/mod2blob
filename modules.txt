@@ -27,4 +27,4 @@ https://github.com/chrispassas/silk?utm_campaign=awesomego&utm_medium=referral&u
 https://awesome-go.com/validation/
 https://github.com/brianvoe/gofakeit?tab=readme-ov-file#functions
 https://github.com/razorpay/go-financial
-
+https://github.com/joshuaferrara/go-satellite

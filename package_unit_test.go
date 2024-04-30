@@ -53,9 +53,9 @@ func Test_parseFunction(t *testing.T) {
 			err:        ErrInvalidFunction,
 		},
 		{
-			definition: "func Echo(test, x float64) ([]string, error)",
+			definition: "func Echo2(test, x float64) ([]string, error)",
 			expected: &Function{
-				Name: "Echo",
+				Name: "Echo2",
 				Args: []Arg{
 					{
 						Name: "test",
