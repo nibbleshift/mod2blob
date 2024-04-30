@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	ErrInvalidFunction = errors.New("invalid function definition")
+	ErrInvalidFunction  = errors.New("invalid function definition")
+	ErrFunctionNoReturn = errors.New("function has no return values")
 )
 
 type Package struct {
@@ -151,6 +152,9 @@ func parseFunction(def string) (*Function, error) {
 			f.Return = []Arg{}
 			f.Return = append(f.Return, Arg{Type: strings.Trim(returnString, " ")})
 		}
+	} else {
+		// dont track functions that dont return a value
+		return nil, nil
 	}
 	if len(argObjList) > 0 {
 		f.Args = argObjList

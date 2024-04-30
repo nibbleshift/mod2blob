@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"os"
 
+	"github.com/42atomys/sprout"
 	"github.com/nibbleshift/argenv"
 )
 
@@ -28,7 +29,9 @@ func main() {
 
 	var tmplFile = config.Template
 
-	tmpl, err := template.New(tmplFile).ParseFiles(tmplFile)
+	tmpl, err := template.New(tmplFile).
+		Funcs(sprout.FuncMap()).
+		ParseFiles(tmplFile)
 
 	if err != nil {
 		panic(err)

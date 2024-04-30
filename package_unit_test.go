@@ -14,16 +14,8 @@ func Test_parseFunction(t *testing.T) {
 	}{
 		{
 			definition: "func test(test int)",
-			expected: &Function{
-				Name: "test",
-				Args: []Arg{
-					{
-						Name: "test",
-						Type: "int",
-					},
-				},
-			},
-			err: nil,
+			expected:   nil,
+			err:        nil,
 		},
 		{
 			definition: "func Echo(test string, x float64) []string",

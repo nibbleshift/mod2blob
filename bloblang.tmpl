@@ -1,6 +1,6 @@
 package bloblang
 
-{{- $moduleName := .Name -}}
+{{ $moduleName := .Name -}}
 import (
 	"log"
 
@@ -24,7 +24,7 @@ func init() {
 		{{ else }}
 		{{ $argStr = (printf "%s, %s" $argStr .Name) }}
 		{{- end -}}
-		{{.Name}}, err := args.Get{{ .Type }}("{{ .Name }}")
+		{{.Name}}, err := args.Get{{ title .Type }}("{{ .Name }}")
 		if err != nil {
 			return nil, err
 		}
