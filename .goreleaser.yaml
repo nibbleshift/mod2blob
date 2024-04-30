@@ -1,27 +1,31 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
-
-# The lines below are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/need to use them.
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# vim: set ts=2 sw=2 tw=0 fo=cnqoj
-
 version: 1
 
 before:
   hooks:
     - go mod tidy
 builds:
-  - env:
+  - id: mod2blob
+    main: main.go
+    binary: mod2blob
+    env:
       - CGO_ENABLED=0
-    goos:
-      - linux
-      - windows
-      - darwin
-
+    ldflags: >
+      -s -w
+    goos: [ linux, windows, darwin, freebsd, openbsd ]
+    goarch: [ amd64, arm, arm64 ]
+    goarm: [ 6, 7 ]
+    ignore:
+      - goos: windows
+        goarch: arm
+      - goos: darwin
+        goarch: arm
 archives:
-  - format: tar.gz
-    # this name template makes the OS and Arch compatible with the results of `uname`.
+  - id: mod2blob
+    builds: [ mod2blob ]
+    format: tar.gz
+    files:
+      - README.md
+      - LICENSE
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -33,10 +37,9 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
-
-changelog:
-  sort: asc
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
+release:
+  github:
+    owner: nibbleshift
+    name: mod2blob
+  prerelease: auto
+  disable: false
