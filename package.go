@@ -71,7 +71,17 @@ func (p *Package) buildMap() error {
 			case "int64":
 				_ = p.addToMap("method", "Int64", f)
 			default:
+				log.Println(f.Args[0])
+			}
+		}
 
+		if len(f.Args) > 1 {
+			switch f.Args[0].Type {
+			case "float64":
+				_ = p.addToMap("function", "Float64", f)
+			case "int64":
+				_ = p.addToMap("function", "Int64", f)
+			default:
 				log.Println(f.Args[0])
 			}
 		}
@@ -384,7 +394,24 @@ func (pkg *Package) Generate() error {
 
 	for _, funcMap := range pkg.Map["function"] {
 		for _, v := range funcMap {
-			f, err := os.Create(v.Name + ".go")
+			f, err := os.Create(pkg.Name + "_function.go")
+
+			if err != nil {
+				panic(err)
+			}
+			defer f.Close()
+
+			err = funcTmpl.Execute(f, v)
+
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
+	for _, funcMap := range pkg.Map["method"] {
+		for _, v := range funcMap {
+			f, err := os.Create(pkg.Name + "_method.go")
 
 			if err != nil {
 				panic(err)
