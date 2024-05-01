@@ -12,7 +12,7 @@ import (
 type Config struct {
 	Package    string `default:"" description:"Name of a go module such as 'math' or 'strings'"`
 	OutputFile string `default:"" description:"Output file to write generated code to."`
-	Template   string `default:"bloblang.tmpl" description:"Template file to use for generated code"`
+	Template   string `default:"bloblang_function.tmpl" description:"Template file to use for generated code"`
 	Prefix     string `default:"" description:"Prefix to use for function names"`
 }
 
