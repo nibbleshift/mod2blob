@@ -14,7 +14,9 @@ func init() {
 	{{- if gt $nArgs 0 -}}
 	{{- $funcName := .Name }}
 	object{{.Name}}Spec := bloblang.NewPluginSpec().
-		Param(bloblang.NewStringParam("text"))
+		{{- range $i, $el := .Args -}}
+			{{if $i}}.{{end}}Param(bloblang.New{{ title .Type}}Param("{{$el.Name}}"))
+		{{- end }}
 
 	err := bloblang.RegisterFunctionV2("{{.Name}}", object{{.Name}}Spec, func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 		{{- $argStr := "" -}}
