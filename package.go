@@ -2,14 +2,17 @@ package main
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
 var (
 	ErrInvalidFunction  = errors.New("invalid function definition")
 	ErrFunctionNoReturn = errors.New("function has no return values")
+	ErrEmptyString      = errors.New("string is empty")
+	ErrInvalidArguments = errors.New("invalid function arguments")
 )
 
 type Package struct {
@@ -28,22 +31,6 @@ type Function struct {
 	Name   string
 	Args   []Arg
 	Return []Arg
-}
-
-func isValidFunction(definition string) bool {
-	if !strings.HasPrefix(definition, "func ") {
-		return false
-	}
-
-	if !strings.Contains(definition, "(") {
-		return false
-	}
-
-	if !strings.Contains(definition, ")") {
-		return false
-	}
-
-	return true
 }
 
 func (f *Function) GetName() string {
@@ -65,7 +52,7 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 	stdout, err := cmd.Output()
 
 	if err != nil {
-		fmt.Println(packageName + ": " + err.Error())
+		log.Println(packageName + ": " + err.Error())
 		return nil, err
 	}
 
@@ -87,80 +74,224 @@ func (pkg *Package) GetName() string {
 	return pkg.Name
 }
 
-func parseFunction(def string) (*Function, error) {
-	if !isValidFunction(def) {
+func parseReturn(arg string) (*Arg, error) {
+	var (
+		argType string
+	)
+
+	// check for empty arg
+	if arg == "" {
 		return nil, ErrInvalidFunction
 	}
 
-	f := Function{}
+	// remove trailing/leading space
+	arg = strings.TrimSpace(arg)
 
-	function := def[5:]
+	parts := strings.Split(arg, " ")
 
-	fields := strings.Split(function, "(")
+	switch len(parts) {
+	case 1:
+		argType = parts[0]
+	case 2:
+		// argument type and name provided
+		argType = parts[1]
 
-	argsStrList := strings.Split(strings.Join(fields[1:], ""), ")")[:1]
-
-	argObjList := make([]Arg, 0)
-	for _, argsStr := range argsStrList {
-		argStrList := strings.Split(string(argsStr), ",")
-
-		for _, argStr := range argStrList {
-			argStr := strings.Trim(argStr, " ")
-			argObj := Arg{}
-
-			arg := strings.Split(argStr, " ")
-			argObj.Name = arg[0]
-
-			if len(arg) > 1 {
-				argObj.Type = strings.Join(arg[1:], "")
-			}
-
-			argObjList = append(argObjList, argObj)
+		if argType == "" {
+			return nil, ErrInvalidFunction
 		}
-
-		nArgs := len(argStrList)
-		argType := ""
-
-		for i := nArgs - 1; i != -1; i-- {
-			if argType == "" && argObjList[i].Type != "" {
-				argType = argObjList[i].Type
-				continue
-			}
-
-			if argObjList[i].Type == "" {
-				argObjList[i].Type = argType
-			}
-		}
-
+	default:
+		return nil, ErrInvalidArguments
 	}
 
-	returnString := strings.Trim(strings.Join(strings.Split(strings.Join(fields[1:], ""), ")")[1:], ""), " ")
-	if len(returnString) != 0 {
-		if strings.Contains(returnString, ",") {
-			argStrings := strings.Split(returnString, ",")
-			for _, argString := range argStrings {
-				argString = strings.Trim(argString, " ")
-				if strings.Contains(argString, " ") {
-					parts := strings.Split(argString, " ")
-					f.Return = append(f.Return, Arg{Name: parts[1], Type: parts[0]})
-				} else {
-					f.Return = append(f.Return, Arg{Type: argString})
+	argObj := Arg{
+		Type: argType,
+	}
 
-				}
+	return &argObj, nil
+}
+func parseArgument(arg string) (*Arg, error) {
+	var (
+		argName string
+		argType string
+	)
+
+	// check for empty arg
+	if arg == "" {
+		return nil, ErrInvalidFunction
+	}
+
+	// remove trailing/leading space
+	arg = strings.TrimSpace(arg)
+
+	parts := strings.Split(arg, " ")
+
+	switch len(parts) {
+	case 1:
+		// this argument only has a name, the type of this argument MUST be resolved
+		// outside of this function using the other arguments available
+		argName = parts[0]
+	case 2:
+		// argument type and name provided
+		argName = parts[0]
+		argType = parts[1]
+
+		if argType == "" || argName == "" {
+			return nil, ErrInvalidFunction
+		}
+	default:
+		return nil, ErrInvalidArguments
+	}
+
+	argObj := Arg{
+		Name: argName,
+		Type: argType,
+	}
+
+	return &argObj, nil
+}
+
+func parseFunctionArguments(args string) ([]Arg, error) {
+	var (
+		argObjectList []Arg
+	)
+
+	// return if we get an empty string
+	if args == "" {
+		return nil, ErrEmptyString
+	}
+
+	argObjectList = make([]Arg, 0)
+
+	if strings.Contains(args, ",") {
+		// multiple argument case
+		arguments := strings.Split(args, ", ")
+
+		// iterate through arguments and add each to the arg list
+		for _, arg := range arguments {
+			argObj, err := parseArgument(arg)
+
+			if err != nil {
+				return nil, err
 			}
-		} else {
-			f.Return = []Arg{}
-			f.Return = append(f.Return, Arg{Type: strings.Trim(returnString, " ")})
+			argObjectList = append(argObjectList, *argObj)
 		}
 	} else {
-		// dont track functions that dont return a value
-		return nil, nil
-	}
-	if len(argObjList) > 0 {
-		f.Args = argObjList
-	}
-	f.Name = fields[0]
+		// single argument case
+		argObj, err := parseArgument(args)
 
+		if err != nil {
+			return nil, err
+		}
+
+		argObjectList = append(argObjectList, *argObj)
+	}
+
+	// check to see if all arg typs have been resolved
+	resolve := make([]int, 0)
+	resolveToType := ""
+	for i, argObject := range argObjectList {
+		if argObject.Type == "" {
+			resolve = append(resolve, i)
+			continue
+		}
+
+		if resolveToType == "" {
+			resolveToType = argObject.Type
+		}
+	}
+
+	for i := range resolve {
+		argObjectList[i].Type = resolveToType
+	}
+
+	return argObjectList, nil
+}
+
+func parseReturnArguments(args string) ([]Arg, error) {
+	var (
+		argObjectList []Arg
+	)
+
+	args = strings.ReplaceAll(strings.ReplaceAll(args, "(", ""), ")", "")
+
+	// return if we get an empty string
+	if args == "" {
+		return nil, ErrEmptyString
+	}
+
+	argObjectList = make([]Arg, 0)
+
+	if strings.Contains(args, ",") {
+		// multiple argument case
+		arguments := strings.Split(args, ", ")
+
+		// iterate through arguments and add each to the arg list
+		for _, arg := range arguments {
+			argObj, err := parseReturn(arg)
+
+			if err != nil {
+				return nil, err
+			}
+			argObjectList = append(argObjectList, *argObj)
+		}
+	} else {
+		// single argument case
+		argObj, err := parseReturn(args)
+
+		if err != nil {
+			return nil, err
+		}
+
+		argObjectList = append(argObjectList, *argObj)
+	}
+
+	// remove "( )" around the args if it is present
+	return argObjectList, nil
+}
+
+func parseFunction(def string) (*Function, error) {
+	var (
+		err        error
+		funcName   string
+		funcArgs   []Arg
+		funcReturn []Arg
+	)
+	pattern := regexp.MustCompile(`^func (?P<funcName>\S+)\((?P<args>.*?)\)(?P<return>.*)`)
+
+	match := pattern.FindStringSubmatch(def)
+
+	if def == "" {
+		return nil, ErrEmptyString
+	}
+
+	for i, name := range pattern.SubexpNames() {
+		// log.Printf("'%8s'\t %d -> %s\n", name, i, match[i])
+		// skip matches that are empty strings
+		if match[i] == "" {
+			continue
+		}
+		switch name {
+		case "funcName":
+			funcName = match[i]
+		case "args":
+			funcArgs, err = parseFunctionArguments(match[i])
+
+			if err != nil {
+				log.Printf("%s: err: %s\n", err.Error(), match[i])
+			}
+		case "return":
+			funcReturn, err = parseReturnArguments(match[i])
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}
+
+	f := Function{
+		Name:   funcName,
+		Args:   funcArgs,
+		Return: funcReturn,
+	}
 	return &f, nil
 }
 
@@ -173,7 +304,7 @@ func (pkg *Package) parseDoc() error {
 			function, err := parseFunction(line)
 
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				continue
 			}
 			functions = append(functions, function)

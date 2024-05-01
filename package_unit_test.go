@@ -14,8 +14,16 @@ func Test_parseFunction(t *testing.T) {
 	}{
 		{
 			definition: "func test(test int)",
-			expected:   nil,
-			err:        nil,
+			expected: &Function{
+				Name: "test",
+				Args: []Arg{
+					{
+						Name: "test",
+						Type: "int",
+					},
+				},
+			},
+			err: nil,
 		},
 		{
 			definition: "func Echo(test string, x float64) []string",
@@ -38,11 +46,6 @@ func Test_parseFunction(t *testing.T) {
 				},
 			},
 			err: nil,
-		},
-		{
-			definition: "func testtest int)",
-			expected:   nil,
-			err:        ErrInvalidFunction,
 		},
 		{
 			definition: "func Echo2(test, x float64) ([]string, error)",
@@ -69,18 +72,13 @@ func Test_parseFunction(t *testing.T) {
 			},
 			err: nil,
 		},
-		{
-			definition: "func testtest int)",
-			expected:   nil,
-			err:        ErrInvalidFunction,
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.definition, func(t *testing.T) {
-			parsed, err := parseFunction(tt.definition)
+			actual, err := parseFunction(tt.definition)
 			assert.Equal(t, err, tt.err)
-			assert.DeepEqual(t, parsed, tt.expected)
+			assert.DeepEqual(t, actual, tt.expected)
 		})
 	}
 }

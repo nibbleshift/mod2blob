@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
+	"log"
 	"os"
 
 	"github.com/42atomys/sprout"
@@ -17,13 +17,14 @@ type Config struct {
 }
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	config := &Config{}
 	argenv.Init(config)
 
 	pkg, err := LoadPackage(config.Package, config.Prefix)
 
 	if err != nil {
-		fmt.Println("LoadPackage: " + err.Error())
+		log.Println("LoadPackage: " + err.Error())
 		return
 	}
 
