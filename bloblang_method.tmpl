@@ -8,6 +8,9 @@ import (
 	"github.com/benthosdev/benthos/v4/public/bloblang"
 )
 
+
+// Supported Method: Array, Bool, Bytes, Float64, Int64, Object, String, Timestamp
+
 func init() {
 	var (
 		err error
@@ -21,8 +24,8 @@ func init() {
 			{{if $i}}.{{end}}Param(bloblang.New{{ benthosType .Type}}Param("{{$el.Name}}"))
 		{{- end }}
 
-	err = bloblang.RegisterFunctionV2("{{.Name}}", object{{.Name}}Spec,
-		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+	err = bloblang.RegisterMethodV2("{{.Name}}", object{{.Name}}Spec,
+		func(args *bloblang.ParsedParams) (bloblang.Method, error) {
 			{{- $argStr := "" -}}
 			{{- range .Args -}}
 			{{- if eq $argStr "" -}}
@@ -36,7 +39,7 @@ func init() {
 			}
 			{{ end -}}
 
-			return func() (interface{}, error) {
+			return bloblang.{{ benthosType .Type }}(func(s string) (any, error) {
 				return {{$moduleName}}.{{$funcName}}({{ $argStr }}), nil
 			}, nil
 	})
