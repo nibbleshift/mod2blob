@@ -9,16 +9,19 @@ import (
 )
 
 func init() {
+	var (
+		err error
+	)
 {{ range .Functions }}
 	{{- $nArgs := len .Args -}}
 	{{- if gt $nArgs 0 -}}
 	{{- $funcName := .Name }}
 	object{{.Name}}Spec := bloblang.NewPluginSpec().
 		{{- range $i, $el := .Args -}}
-			{{if $i}}.{{end}}Param(bloblang.New{{ title .Type}}Param("{{$el.Name}}"))
+			{{if $i}}.{{end}}Param(bloblang.New{{ benthosType .Type}}Param("{{$el.Name}}"))
 		{{- end }}
 
-	err := bloblang.RegisterFunctionV2("{{.Name}}", object{{.Name}}Spec,
+	err = bloblang.RegisterFunctionV2("{{.Name}}", object{{.Name}}Spec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			{{- $argStr := "" -}}
 			{{- range .Args -}}
@@ -27,7 +30,7 @@ func init() {
 			{{ else }}
 			{{ $argStr = (printf "%s, %s" $argStr .Name) }}
 			{{- end -}}
-			{{.Name}}, err := args.Get{{ title .Type }}("{{ .Name }}")
+			{{.Name}}, err := args.Get{{ benthosType .Type }}("{{ .Name }}")
 			if err != nil {
 				return nil, err
 			}

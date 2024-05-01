@@ -16,10 +16,25 @@ type Config struct {
 	Prefix     string `default:"" description:"Prefix to use for function names"`
 }
 
+func toBenthosType(typeStr string) string {
+	switch typeStr {
+	case "float", "float32", "float64":
+		return "Float64"
+	case "int", "int32", "int64", "uint", "uint32", "uint64":
+		return "Int64"
+	default:
+		return typeStr
+	}
+}
+
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	config := &Config{}
 	argenv.Init(config)
+
+	customFuncs := map[string]any{
+		"benthosType": toBenthosType,
+	}
 
 	pkg, err := LoadPackage(config.Package, config.Prefix)
 
@@ -32,6 +47,7 @@ func main() {
 
 	tmpl, err := template.New(tmplFile).
 		Funcs(sprout.FuncMap()).
+		Funcs(customFuncs).
 		ParseFiles(tmplFile)
 
 	if err != nil {
