@@ -20,6 +20,8 @@ type Package struct {
 	Functions []*Function
 	Name      string
 	Prefix    string
+	// map[method|function][String|Bytes|Int64|Float64|etc]*Function
+	Map map[string]map[string][]*Function
 }
 
 type Arg struct {
@@ -45,6 +47,34 @@ func (f *Function) GetReturn() []Arg {
 	return f.Return
 }
 
+func (p *Package) addToMap(callType string, paramType string, f *Function) error {
+	if _, ok := p.Map[callType]; !ok {
+		p.Map[callType] = make(map[string][]*Function)
+	}
+
+	p.Map[callType][paramType] = append(p.Map[callType][paramType], f)
+	return nil
+}
+
+func (p *Package) buildMap() error {
+	p.Map = make(map[string]map[string][]*Function)
+
+	for _, f := range p.Functions {
+		if len(f.Args) == 1 {
+			switch f.Args[0].Type {
+			case "float64":
+				_ = p.addToMap("method", "Float64", f)
+			case "int64":
+				_ = p.addToMap("method", "Int64", f)
+			default:
+
+				log.Println(f.Args[0])
+			}
+		}
+	}
+	return nil
+}
+
 func LoadPackage(packageName string, prefix string) (*Package, error) {
 	pkg := &Package{}
 	cmd := exec.Command("go", "doc", packageName)
@@ -62,6 +92,13 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 	pkg.Prefix = prefix
 
 	err = pkg.parseDoc()
+
+	if err != nil {
+		return nil, err
+	}
+
+	// build a map of functions, methods etc.
+	err = pkg.buildMap()
 
 	if err != nil {
 		return nil, err
