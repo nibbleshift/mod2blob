@@ -7,9 +7,8 @@ import (
 )
 
 type Config struct {
-	Package    string `default:"" description:"Name of a go module such as 'math' or 'strings'"`
-	OutputFile string `default:"" description:"Output file to write generated code to."`
-	Prefix     string `default:"" description:"Prefix to use for function names"`
+	Package string `default:"" description:"Name of a go module such as 'math' or 'strings'"`
+	Prefix  string `default:"" description:"Prefix to use for function names"`
 }
 
 func main() {
