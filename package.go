@@ -2,10 +2,14 @@ package main
 
 import (
 	"errors"
+	"html/template"
 	"log"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
+
+	"github.com/42atomys/sprout"
 )
 
 var (
@@ -332,6 +336,17 @@ func parseFunction(def string) (*Function, error) {
 	return &f, nil
 }
 
+func toBenthosType(typeStr string) string {
+	switch typeStr {
+	case "float", "float32", "float64":
+		return "Float64"
+	case "int", "int32", "int64", "uint", "uint32", "uint64":
+		return "Int64"
+	default:
+		return typeStr
+	}
+}
+
 func (pkg *Package) parseDoc() error {
 	lines := strings.Split(string(pkg.raw), "\n")
 
@@ -353,6 +368,39 @@ func (pkg *Package) parseDoc() error {
 	return nil
 }
 
+func (pkg *Package) Generate() error {
+	customFuncs := map[string]any{
+		"benthosType": toBenthosType,
+	}
+
+	funcTmpl, err := template.New("function").
+		Funcs(sprout.FuncMap()).
+		Funcs(customFuncs).
+		Parse(FunctionTemplate)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, funcMap := range pkg.Map["function"] {
+		for _, v := range funcMap {
+			f, err := os.Create(v.Name + ".go")
+
+			if err != nil {
+				panic(err)
+			}
+			defer f.Close()
+
+			err = funcTmpl.Execute(f, v)
+
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+
+	return nil
+}
 func (pkg *Package) ListFunctions() []Function {
 	return nil
 }
