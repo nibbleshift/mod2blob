@@ -1,5 +1,4 @@
 https://awesome-go.com/validation/
-https://github.com/42atomys/sprout
 https://github.com/adrianmo/go-nmea
 https://github.com/brianvoe/gofakeit
 https://github.com/chrispassas/nfdump
