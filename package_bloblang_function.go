@@ -3,11 +3,11 @@ package main
 var FunctionTemplate string = `
 package bloblang
 
-{{ $moduleName := .Name -}}
+{{ $moduleName := "math" -}}
 import (
 	"log"
 
-	"{{.Name}}"
+	"math"
 	"github.com/benthosdev/benthos/v4/public/bloblang"
 )
 
@@ -15,7 +15,8 @@ func init() {
 	var (
 		err error
 	)
-{{ range .Functions }}
+{{ range $k, $v := . }}
+        {{ range $v }}
 	{{- $nArgs := len .Args -}}
 	{{- if gt $nArgs 0 -}}
 	{{- $funcName := .Name }}
@@ -48,5 +49,6 @@ func init() {
 		panic(err)
 	}
 	{{ end }}
+{{- end }}
 {{- end }}
 }`

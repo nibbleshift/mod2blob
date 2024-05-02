@@ -378,9 +378,14 @@ func (pkg *Package) parseDoc() error {
 	return nil
 }
 
+func function(f *Function) Function {
+	return *f
+}
+
 func (pkg *Package) Generate() error {
 	customFuncs := map[string]any{
 		"benthosType": toBenthosType,
+		"function":    function,
 	}
 
 	funcTmpl, err := template.New("function").
@@ -392,21 +397,17 @@ func (pkg *Package) Generate() error {
 		panic(err)
 	}
 
-	for _, funcMap := range pkg.Map["function"] {
-		for _, v := range funcMap {
-			f, err := os.Create(pkg.Name + "_function.go")
+	f, err := os.Create(pkg.Name + "_function.go")
 
-			if err != nil {
-				panic(err)
-			}
-			defer f.Close()
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
 
-			err = funcTmpl.Execute(f, v)
+	err = funcTmpl.Execute(f, pkg.Map["function"])
 
-			if err != nil {
-				panic(err)
-			}
-		}
+	if err != nil {
+		panic(err)
 	}
 
 	for _, funcMap := range pkg.Map["method"] {
