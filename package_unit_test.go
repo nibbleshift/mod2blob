@@ -26,6 +26,19 @@ func Test_parseFunction(t *testing.T) {
 			err: nil,
 		},
 		{
+			definition: "func test(test []string)",
+			expected: &Function{
+				Name: "test",
+				Args: []Arg{
+					{
+						Name: "test",
+						Type: "[]string",
+					},
+				},
+			},
+			err: nil,
+		},
+		{
 			definition: "func Echo(test string, x float64) []string",
 			expected: &Function{
 				Name: "Echo",
