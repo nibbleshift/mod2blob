@@ -417,6 +417,10 @@ func (pkg *Package) Generate() error {
 		Funcs(customFuncs).
 		Parse(MethodTemplate)
 
+	if err != nil {
+		panic(err)
+	}
+
 	f, err = os.Create(pkg.Name + "_method.go")
 
 	if err != nil {

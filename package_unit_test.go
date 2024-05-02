@@ -26,13 +26,21 @@ func Test_parseFunction(t *testing.T) {
 			err: nil,
 		},
 		{
-			definition: "func test(test []string)",
+			definition: "func test(test []string, two float64, four map[string]string)",
 			expected: &Function{
 				Name: "test",
 				Args: []Arg{
 					{
 						Name: "test",
 						Type: "[]string",
+					},
+					{
+						Name: "two",
+						Type: "float64",
+					},
+					{
+						Name: "four",
+						Type: "map[string]string",
 					},
 				},
 			},
@@ -61,6 +69,22 @@ func Test_parseFunction(t *testing.T) {
 			err: nil,
 		},
 		{
+			definition: "func NoArgs() ([]string, error)",
+			expected: &Function{
+				Name: "NoArgs",
+				Args: nil,
+				Return: []Arg{
+					{
+						Type: "[]string",
+					},
+					{
+						Type: "error",
+					},
+				},
+			},
+			err: nil,
+		},
+		{
 			definition: "func Echo2(test, x float64) ([]string, error)",
 			expected: &Function{
 				Name: "Echo2",
@@ -80,6 +104,35 @@ func Test_parseFunction(t *testing.T) {
 					},
 					{
 						Type: "error",
+					},
+				},
+			},
+			err: nil,
+		},
+		{
+			definition: "func Echo2(test, one, two, three, x float64)",
+			expected: &Function{
+				Name: "Echo2",
+				Args: []Arg{
+					{
+						Name: "test",
+						Type: "float64",
+					},
+					{
+						Name: "one",
+						Type: "float64",
+					},
+					{
+						Name: "two",
+						Type: "float64",
+					},
+					{
+						Name: "three",
+						Type: "float64",
+					},
+					{
+						Name: "x",
+						Type: "float64",
 					},
 				},
 			},
