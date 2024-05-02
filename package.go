@@ -388,6 +388,7 @@ func (pkg *Package) Generate() error {
 		"function":    function,
 	}
 
+	// generate functions
 	funcTmpl, err := template.New("function").
 		Funcs(sprout.FuncMap()).
 		Funcs(customFuncs).
@@ -410,21 +411,23 @@ func (pkg *Package) Generate() error {
 		panic(err)
 	}
 
-	for _, funcMap := range pkg.Map["method"] {
-		for _, v := range funcMap {
-			f, err := os.Create(pkg.Name + "_method.go")
+	// generate methods
+	methodTmpl, err := template.New("method").
+		Funcs(sprout.FuncMap()).
+		Funcs(customFuncs).
+		Parse(MethodTemplate)
 
-			if err != nil {
-				panic(err)
-			}
-			defer f.Close()
+	f, err = os.Create(pkg.Name + "_method.go")
 
-			err = funcTmpl.Execute(f, v)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
 
-			if err != nil {
-				panic(err)
-			}
-		}
+	err = methodTmpl.Execute(f, pkg.Map["method"])
+
+	if err != nil {
+		panic(err)
 	}
 
 	return nil
