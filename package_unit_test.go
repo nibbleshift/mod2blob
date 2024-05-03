@@ -148,3 +148,86 @@ func Test_parseFunction(t *testing.T) {
 		})
 	}
 }
+
+func Test_parseReturn(t *testing.T) {
+	var tests = []struct {
+		definition string
+		expected   *Arg
+		err        error
+	}{
+		{
+			definition: "float64",
+			expected: &Arg{
+				Type: "float64",
+			},
+			err: nil,
+		},
+		{
+			definition: "[]string",
+			expected: &Arg{
+				Type: "[]string",
+			},
+			err: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.definition, func(t *testing.T) {
+			actual, err := parseReturn(tt.definition)
+			assert.Equal(t, err, tt.err)
+			assert.DeepEqual(t, actual, tt.expected)
+		})
+	}
+}
+
+func Test_parseReturnArguments(t *testing.T) {
+	var tests = []struct {
+		definition string
+		expected   []Arg
+		err        error
+	}{
+		{
+			definition: "float64",
+			expected: []Arg{
+				{
+					Type: "float64",
+				},
+			},
+			err: nil,
+		},
+		{
+			definition: "[]string",
+			expected: []Arg{
+				{
+					Type: "[]string",
+				},
+			},
+			err: nil,
+		},
+		{
+			definition: "([]string, float64)",
+			expected: []Arg{
+				{
+					Type: "[]string",
+				},
+				{
+					Type: "float64",
+				},
+			},
+			err: nil,
+		},
+		{
+			definition: "([]string  float64)",
+			expected:   nil,
+			err:        ErrInvalidArguments,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.definition, func(t *testing.T) {
+			actual, err := parseReturnArguments(tt.definition)
+			assert.Equal(t, err, tt.err)
+			assert.DeepEqual(t, actual, tt.expected)
+		})
+	}
+}

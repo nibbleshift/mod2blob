@@ -52,6 +52,7 @@ func (f *Function) GetReturn() []Arg {
 }
 
 func (p *Package) addToMap(callType string, paramType string, f *Function) error {
+
 	if _, ok := p.Map[callType]; !ok {
 		p.Map[callType] = make(map[string][]*Function)
 	}
