@@ -7,7 +7,7 @@ package bloblang
 import (
 	"log"
 
-	"math"
+	"{{getPackage}}"
 	"github.com/benthosdev/benthos/v4/public/bloblang"
 )
 
@@ -29,15 +29,20 @@ func init() {
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			{{- $argStr := "" -}}
 			{{- range .Args -}}
-			{{- if eq $argStr "" -}}
-			{{ $argStr = (printf "%s" .Name) }}
-			{{ else }}
-			{{ $argStr = (printf "%s, %s" $argStr .Name) }}
-			{{- end -}}
-			{{.Name}}, err := args.Get{{ benthosType .Type }}("{{ .Name }}")
+			{{- $bType := benthosType .Type }}
+			{{.Name}}, err := args.Get{{ $bType }}("{{ .Name }}")
 			if err != nil {
 				return nil, err
 			}
+			
+			{{ .Name }}a := {{.Type}}({{.Name}})
+
+
+			{{- if eq $argStr "" -}}
+			{{ $argStr = (printf "%sa" .Name) }}
+			{{ else }}
+			{{ $argStr = (printf "%s, %sa" $argStr .Name) }}
+			{{- end -}}
 			{{ end -}}
 
 			return func() (interface{}, error) {

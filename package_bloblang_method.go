@@ -7,7 +7,7 @@ package bloblang
 import (
 	"log"
 
-	"{{.Name}}"
+	"{{getPackage}}"
 	"github.com/benthosdev/benthos/v4/public/bloblang"
 )
 

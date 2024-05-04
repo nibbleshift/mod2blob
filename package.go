@@ -388,53 +388,59 @@ func (pkg *Package) Generate() error {
 	customFuncs := map[string]any{
 		"benthosType": toBenthosType,
 		"function":    function,
+		"getPackage":  pkg.GetName,
 	}
 
-	// generate functions
-	funcTmpl, err := template.New("function").
-		Funcs(sprout.FuncMap()).
-		Funcs(customFuncs).
-		Parse(FunctionTemplate)
+	if len(pkg.Map["function"]) > 0 {
+		// generate functions
+		funcTmpl, err := template.New("function").
+			Funcs(sprout.FuncMap()).
+			Funcs(customFuncs).
+			Parse(FunctionTemplate)
 
-	if err != nil {
-		panic(err)
+		if err != nil {
+			panic(err)
+		}
+
+		f, err := os.Create(pkg.Name + "_function.go")
+
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		err = funcTmpl.Execute(f, pkg.Map["function"])
+
+		if err != nil {
+			panic(err)
+		}
 	}
 
-	f, err := os.Create(pkg.Name + "_function.go")
+	/*
+		if len(pkg.Map["method"]) > 0 {
+			// generate methods
+			methodTmpl, err := template.New("method").
+				Funcs(sprout.FuncMap()).
+				Funcs(customFuncs).
+				Parse(MethodTemplate)
 
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
+			if err != nil {
+				panic(err)
+			}
 
-	err = funcTmpl.Execute(f, pkg.Map["function"])
+			f, err := os.Create(pkg.Name + "_method.go")
 
-	if err != nil {
-		panic(err)
-	}
+			if err != nil {
+				panic(err)
+			}
+			defer f.Close()
 
-	// generate methods
-	methodTmpl, err := template.New("method").
-		Funcs(sprout.FuncMap()).
-		Funcs(customFuncs).
-		Parse(MethodTemplate)
+			err = methodTmpl.Execute(f, pkg.Map["method"])
 
-	if err != nil {
-		panic(err)
-	}
-
-	f, err = os.Create(pkg.Name + "_method.go")
-
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
-	err = methodTmpl.Execute(f, pkg.Map["method"])
-
-	if err != nil {
-		panic(err)
-	}
+			if err != nil {
+				panic(err)
+			}
+		}*/
 
 	return nil
 }
