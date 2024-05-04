@@ -161,6 +161,7 @@ func parseReturn(arg string) (*Arg, error) {
 
 	return &argObj, nil
 }
+
 func parseArgument(arg string) (*Arg, error) {
 	var (
 		argName string

@@ -231,3 +231,92 @@ func Test_parseReturnArguments(t *testing.T) {
 		})
 	}
 }
+
+func Test_parseArgument(t *testing.T) {
+	var tests = []struct {
+		definition string
+		expected   *Arg
+		err        error
+	}{
+		{
+			definition: "num1 float64",
+			expected: &Arg{
+				Name: "num1",
+				Type: "float64",
+			},
+			err: nil,
+		},
+		{
+			definition: "names []string",
+			expected: &Arg{
+				Name: "names",
+				Type: "[]string",
+			},
+			err: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.definition, func(t *testing.T) {
+			actual, err := parseArgument(tt.definition)
+			assert.Equal(t, err, tt.err)
+			assert.DeepEqual(t, actual, tt.expected)
+		})
+	}
+}
+
+func Test_parseFunctionArguments(t *testing.T) {
+	var tests = []struct {
+		definition string
+		expected   []Arg
+		err        error
+	}{
+		{
+			definition: "num float64",
+			expected: []Arg{
+				{
+					Name: "num",
+					Type: "float64",
+				},
+			},
+			err: nil,
+		},
+		{
+			definition: "hello []string",
+			expected: []Arg{
+				{
+					Name: "hello",
+					Type: "[]string",
+				},
+			},
+			err: nil,
+		},
+		{
+			definition: "test []string, one float64",
+			expected: []Arg{
+				{
+					Name: "test",
+					Type: "[]string",
+				},
+				{
+					Name: "one",
+					Type: "float64",
+				},
+			},
+			err: nil,
+		},
+		{
+			definition: "([]string  float64)",
+			expected:   nil,
+			err:        ErrInvalidArguments,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.definition, func(t *testing.T) {
+			actual, err := parseFunctionArguments(tt.definition)
+			assert.Equal(t, err, tt.err)
+			assert.DeepEqual(t, actual, tt.expected)
+		})
+	}
+}
