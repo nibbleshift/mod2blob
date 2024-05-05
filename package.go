@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"errors"
+	"go/format"
 	"html/template"
 	"log"
 	"os"
@@ -34,9 +36,10 @@ type Arg struct {
 }
 
 type Function struct {
-	Name   string
-	Args   []Arg
-	Return []Arg
+	Name        string
+	Description string
+	Args        []Arg
+	Return      []Arg
 }
 
 func (f *Function) GetName() string {
@@ -67,23 +70,23 @@ func (p *Package) buildMap() error {
 	for _, f := range p.Functions {
 		if len(f.Args) == 1 {
 			switch f.Args[0].Type {
-			case "float64":
+			case "float64", "float32":
 				_ = p.addToMap("method", "Float64", f)
-			case "int64":
+			case "int64", "int32", "int":
 				_ = p.addToMap("method", "Int64", f)
 			default:
-				log.Println(f.Args[0])
+				log.Println("Unsupported method type: " + f.Args[0].Type)
 			}
 		}
 
-		if len(f.Args) > 1 {
+		if len(f.Args) > 0 {
 			switch f.Args[0].Type {
-			case "float64":
+			case "float64", "float32":
 				_ = p.addToMap("function", "Float64", f)
-			case "int64":
+			case "int64", "int32", "int":
 				_ = p.addToMap("function", "Int64", f)
 			default:
-				log.Println(f.Args[0])
+				log.Println("Unsupported function type: " + f.Args[0].Type)
 			}
 		}
 	}
@@ -92,7 +95,7 @@ func (p *Package) buildMap() error {
 
 func LoadPackage(packageName string, prefix string) (*Package, error) {
 	pkg := &Package{}
-	cmd := exec.Command("go", "doc", packageName)
+	cmd := exec.Command("go", "doc", "-all", packageName)
 
 	stdout, err := cmd.Output()
 
@@ -124,6 +127,10 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 
 func (pkg *Package) GetName() string {
 	return pkg.Name
+}
+
+func (pkg *Package) GetPrefix() string {
+	return pkg.Prefix
 }
 
 func parseReturn(arg string) (*Arg, error) {
@@ -355,7 +362,7 @@ func toBenthosType(typeStr string) string {
 	case "int", "int32", "int64", "uint", "uint32", "uint64":
 		return "Int64"
 	default:
-		return ""
+		return typeStr
 	}
 }
 
@@ -363,16 +370,24 @@ func (pkg *Package) parseDoc() error {
 	lines := strings.Split(string(pkg.raw), "\n")
 
 	functions := []*Function{}
-	for _, line := range lines {
-		if strings.HasPrefix(line, "func") {
-			function, err := parseFunction(line)
+	for i := 0; i < len(lines); i += 2 {
+		if strings.HasPrefix(lines[i], "func") {
+			function, err := parseFunction(lines[i])
 
 			if err != nil {
 				log.Println(err)
 				continue
 			}
+
+			// This only works with single line descriptions,
+			// fix to span multiple lines
+			function.Description = strings.TrimSpace(lines[i+1])
+
 			functions = append(functions, function)
+
+			log.Printf("Added function %s:%s\n", function.Name, function.Description)
 		}
+
 	}
 
 	pkg.Functions = functions
@@ -389,14 +404,33 @@ func (pkg *Package) Generate() error {
 		"benthosType": toBenthosType,
 		"function":    function,
 		"getPackage":  pkg.GetName,
+		"getPrefix":   pkg.GetPrefix,
 	}
 
 	if len(pkg.Map["function"]) > 0 {
+		var (
+			err    error
+			source bytes.Buffer
+		)
 		// generate functions
 		funcTmpl, err := template.New("function").
 			Funcs(sprout.FuncMap()).
 			Funcs(customFuncs).
 			Parse(FunctionTemplate)
+
+		if err != nil {
+			panic(err)
+		}
+
+		err = funcTmpl.Execute(&source, pkg.Map["function"])
+
+		if err != nil {
+			panic(err)
+		}
+
+		var formatted []byte
+
+		formatted, err = format.Source(source.Bytes())
 
 		if err != nil {
 			panic(err)
@@ -409,7 +443,7 @@ func (pkg *Package) Generate() error {
 		}
 		defer f.Close()
 
-		err = funcTmpl.Execute(f, pkg.Map["function"])
+		_, err = f.Write(formatted)
 
 		if err != nil {
 			panic(err)

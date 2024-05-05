@@ -19,9 +19,8 @@ For example, here is the auto-generated math_function.go:
 package bloblang
 
 import (
-	"math"
-
 	"github.com/benthosdev/benthos/v4/public/bloblang"
+	"math"
 )
 
 func init() {
@@ -29,17 +28,10 @@ func init() {
 		err error
 	)
 
-	objectAtan2Spec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("y")).Param(bloblang.NewFloat64Param("x"))
-
-	err = bloblang.RegisterFunctionV2("Atan2", objectAtan2Spec,
+	objectAbsSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Abs returns the absolute value of x.
+	err = bloblang.RegisterFunctionV2("abs", objectAbsSpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
-			y, err := args.GetFloat64("y")
-			if err != nil {
-				return nil, err
-			}
-
-			ya := float64(y)
-
 			x, err := args.GetFloat64("x")
 			if err != nil {
 				return nil, err
@@ -47,7 +39,83 @@ func init() {
 
 			xa := float64(x)
 			return func() (interface{}, error) {
-				return math.Atan2(ya, xa), nil
+				return math.Abs(xa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectAcosSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Acos returns the arccosine, in radians, of x.
+	err = bloblang.RegisterFunctionV2("acos", objectAcosSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			x, err := args.GetFloat64("x")
+			if err != nil {
+				return nil, err
+			}
+
+			xa := float64(x)
+			return func() (interface{}, error) {
+				return math.Acos(xa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectAsinSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Asin returns the arcsine, in radians, of x.
+	err = bloblang.RegisterFunctionV2("asin", objectAsinSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			x, err := args.GetFloat64("x")
+			if err != nil {
+				return nil, err
+			}
+
+			xa := float64(x)
+			return func() (interface{}, error) {
+				return math.Asin(xa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectAsinhSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Asinh returns the inverse hyperbolic sine of x.
+	err = bloblang.RegisterFunctionV2("asinh", objectAsinhSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			x, err := args.GetFloat64("x")
+			if err != nil {
+				return nil, err
+			}
+
+			xa := float64(x)
+			return func() (interface{}, error) {
+				return math.Asinh(xa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectCbrtSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Cbrt returns the cube root of x.
+	err = bloblang.RegisterFunctionV2("cbrt", objectCbrtSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			x, err := args.GetFloat64("x")
+			if err != nil {
+				return nil, err
+			}
+
+			xa := float64(x)
+			return func() (interface{}, error) {
+				return math.Cbrt(xa), nil
 			}, nil
 		})
 
@@ -56,8 +124,8 @@ func init() {
 	}
 
 	objectCopysignSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("f")).Param(bloblang.NewFloat64Param("sign"))
-
-	err = bloblang.RegisterFunctionV2("Copysign", objectCopysignSpec,
+	// Copysign returns a value with the magnitude of f and the sign of sign.
+	err = bloblang.RegisterFunctionV2("copysign", objectCopysignSpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			f, err := args.GetFloat64("f")
 			if err != nil {
@@ -82,8 +150,8 @@ func init() {
 	}
 
 	objectDimSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x")).Param(bloblang.NewFloat64Param("y"))
-
-	err = bloblang.RegisterFunctionV2("Dim", objectDimSpec,
+	// Dim returns the maximum of x-y or 0.
+	err = bloblang.RegisterFunctionV2("dim", objectDimSpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			x, err := args.GetFloat64("x")
 			if err != nil {
@@ -107,9 +175,47 @@ func init() {
 		panic(err)
 	}
 
-	objectFMASpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x")).Param(bloblang.NewFloat64Param("y")).Param(bloblang.NewFloat64Param("z"))
+	objectErfcSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Erfc returns the complementary error function of x.
+	err = bloblang.RegisterFunctionV2("erfc", objectErfcSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			x, err := args.GetFloat64("x")
+			if err != nil {
+				return nil, err
+			}
 
-	err = bloblang.RegisterFunctionV2("FMA", objectFMASpec,
+			xa := float64(x)
+			return func() (interface{}, error) {
+				return math.Erfc(xa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectExpm1Spec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Expm1 returns e**x - 1, the base-e exponential of x minus 1. It is more
+	err = bloblang.RegisterFunctionV2("expm1", objectExpm1Spec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			x, err := args.GetFloat64("x")
+			if err != nil {
+				return nil, err
+			}
+
+			xa := float64(x)
+			return func() (interface{}, error) {
+				return math.Expm1(xa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectFMASpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x")).Param(bloblang.NewFloat64Param("y")).Param(bloblang.NewFloat64Param("z"))
+	// FMA returns x * y &#43; z, computed with only one rounding. (That is, FMA
+	err = bloblang.RegisterFunctionV2("fma", objectFMASpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			x, err := args.GetFloat64("x")
 			if err != nil {
@@ -140,9 +246,85 @@ func init() {
 		panic(err)
 	}
 
-	objectHypotSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("p")).Param(bloblang.NewFloat64Param("q"))
+	objectFloat32bitsSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("f"))
+	// Float32bits returns the IEEE 754 binary representation of f,
+	err = bloblang.RegisterFunctionV2("float32bits", objectFloat32bitsSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			f, err := args.GetFloat64("f")
+			if err != nil {
+				return nil, err
+			}
 
-	err = bloblang.RegisterFunctionV2("Hypot", objectHypotSpec,
+			fa := float32(f)
+			return func() (interface{}, error) {
+				return math.Float32bits(fa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectFloat64bitsSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("f"))
+	// Float64bits returns the IEEE 754 binary representation of f,
+	err = bloblang.RegisterFunctionV2("float64bits", objectFloat64bitsSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			f, err := args.GetFloat64("f")
+			if err != nil {
+				return nil, err
+			}
+
+			fa := float64(f)
+			return func() (interface{}, error) {
+				return math.Float64bits(fa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectFloorSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Floor returns the greatest integer value less than or equal to x.
+	err = bloblang.RegisterFunctionV2("floor", objectFloorSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			x, err := args.GetFloat64("x")
+			if err != nil {
+				return nil, err
+			}
+
+			xa := float64(x)
+			return func() (interface{}, error) {
+				return math.Floor(xa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectGammaSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Gamma returns the Gamma function of x.
+	err = bloblang.RegisterFunctionV2("gamma", objectGammaSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			x, err := args.GetFloat64("x")
+			if err != nil {
+				return nil, err
+			}
+
+			xa := float64(x)
+			return func() (interface{}, error) {
+				return math.Gamma(xa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectHypotSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("p")).Param(bloblang.NewFloat64Param("q"))
+	// Hypot returns Sqrt(p*p &#43; q*q), taking care to avoid unnecessary overflow and
+	err = bloblang.RegisterFunctionV2("hypot", objectHypotSpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			p, err := args.GetFloat64("p")
 			if err != nil {
@@ -166,25 +348,18 @@ func init() {
 		panic(err)
 	}
 
-	objectIsInfSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("f")).Param(bloblang.NewInt64Param("sign"))
-
-	err = bloblang.RegisterFunctionV2("IsInf", objectIsInfSpec,
+	objectJ0Spec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// J0 returns the order-zero Bessel function of the first kind.
+	err = bloblang.RegisterFunctionV2("j0", objectJ0Spec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
-			f, err := args.GetFloat64("f")
+			x, err := args.GetFloat64("x")
 			if err != nil {
 				return nil, err
 			}
 
-			fa := float64(f)
-
-			sign, err := args.GetInt64("sign")
-			if err != nil {
-				return nil, err
-			}
-
-			signa := int(sign)
+			xa := float64(x)
 			return func() (interface{}, error) {
-				return math.IsInf(fa, signa), nil
+				return math.J0(xa), nil
 			}, nil
 		})
 
@@ -192,25 +367,18 @@ func init() {
 		panic(err)
 	}
 
-	objectLdexpSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("frac")).Param(bloblang.NewInt64Param("exp"))
-
-	err = bloblang.RegisterFunctionV2("Ldexp", objectLdexpSpec,
+	objectLgammaSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Lgamma returns the natural logarithm and sign (-1 or &#43;1) of Gamma(x).
+	err = bloblang.RegisterFunctionV2("lgamma", objectLgammaSpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
-			frac, err := args.GetFloat64("frac")
+			x, err := args.GetFloat64("x")
 			if err != nil {
 				return nil, err
 			}
 
-			fraca := float64(frac)
-
-			exp, err := args.GetInt64("exp")
-			if err != nil {
-				return nil, err
-			}
-
-			expa := int(exp)
+			xa := float64(x)
 			return func() (interface{}, error) {
-				return math.Ldexp(fraca, expa), nil
+				return math.Lgamma(xa), nil
 			}, nil
 		})
 
@@ -219,8 +387,8 @@ func init() {
 	}
 
 	objectMaxSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x")).Param(bloblang.NewFloat64Param("y"))
-
-	err = bloblang.RegisterFunctionV2("Max", objectMaxSpec,
+	// Max returns the larger of x or y.
+	err = bloblang.RegisterFunctionV2("max", objectMaxSpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			x, err := args.GetFloat64("x")
 			if err != nil {
@@ -244,25 +412,25 @@ func init() {
 		panic(err)
 	}
 
-	objectMinSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x")).Param(bloblang.NewFloat64Param("y"))
-
-	err = bloblang.RegisterFunctionV2("Min", objectMinSpec,
+	objectNextafter32Spec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x")).Param(bloblang.NewFloat64Param("y"))
+	// Nextafter32 returns the next representable float32 value after x towards y.
+	err = bloblang.RegisterFunctionV2("nextafter32", objectNextafter32Spec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			x, err := args.GetFloat64("x")
 			if err != nil {
 				return nil, err
 			}
 
-			xa := float64(x)
+			xa := float32(x)
 
 			y, err := args.GetFloat64("y")
 			if err != nil {
 				return nil, err
 			}
 
-			ya := float64(y)
+			ya := float32(y)
 			return func() (interface{}, error) {
-				return math.Min(xa, ya), nil
+				return math.Nextafter32(xa, ya), nil
 			}, nil
 		})
 
@@ -270,9 +438,9 @@ func init() {
 		panic(err)
 	}
 
-	objectModSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x")).Param(bloblang.NewFloat64Param("y"))
-
-	err = bloblang.RegisterFunctionV2("Mod", objectModSpec,
+	objectRoundSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Round returns the nearest integer, rounding half away from zero.
+	err = bloblang.RegisterFunctionV2("round", objectRoundSpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			x, err := args.GetFloat64("x")
 			if err != nil {
@@ -280,15 +448,8 @@ func init() {
 			}
 
 			xa := float64(x)
-
-			y, err := args.GetFloat64("y")
-			if err != nil {
-				return nil, err
-			}
-
-			ya := float64(y)
 			return func() (interface{}, error) {
-				return math.Mod(xa, ya), nil
+				return math.Round(xa), nil
 			}, nil
 		})
 
@@ -296,9 +457,9 @@ func init() {
 		panic(err)
 	}
 
-	objectNextafterSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x")).Param(bloblang.NewFloat64Param("y"))
-
-	err = bloblang.RegisterFunctionV2("Nextafter", objectNextafterSpec,
+	objectSignbitSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Signbit reports whether x is negative or negative zero.
+	err = bloblang.RegisterFunctionV2("signbit", objectSignbitSpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			x, err := args.GetFloat64("x")
 			if err != nil {
@@ -306,15 +467,8 @@ func init() {
 			}
 
 			xa := float64(x)
-
-			y, err := args.GetFloat64("y")
-			if err != nil {
-				return nil, err
-			}
-
-			ya := float64(y)
 			return func() (interface{}, error) {
-				return math.Nextafter(xa, ya), nil
+				return math.Signbit(xa), nil
 			}, nil
 		})
 
@@ -322,9 +476,9 @@ func init() {
 		panic(err)
 	}
 
-	objectPowSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x")).Param(bloblang.NewFloat64Param("y"))
-
-	err = bloblang.RegisterFunctionV2("Pow", objectPowSpec,
+	objectSincosSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Sincos returns Sin(x), Cos(x).
+	err = bloblang.RegisterFunctionV2("sincos", objectSincosSpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			x, err := args.GetFloat64("x")
 			if err != nil {
@@ -332,15 +486,8 @@ func init() {
 			}
 
 			xa := float64(x)
-
-			y, err := args.GetFloat64("y")
-			if err != nil {
-				return nil, err
-			}
-
-			ya := float64(y)
 			return func() (interface{}, error) {
-				return math.Pow(xa, ya), nil
+				return math.Sincos(xa), nil
 			}, nil
 		})
 
@@ -348,9 +495,9 @@ func init() {
 		panic(err)
 	}
 
-	objectRemainderSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x")).Param(bloblang.NewFloat64Param("y"))
-
-	err = bloblang.RegisterFunctionV2("Remainder", objectRemainderSpec,
+	objectSqrtSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Sqrt returns the square root of x.
+	err = bloblang.RegisterFunctionV2("sqrt", objectSqrtSpec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			x, err := args.GetFloat64("x")
 			if err != nil {
@@ -358,15 +505,65 @@ func init() {
 			}
 
 			xa := float64(x)
+			return func() (interface{}, error) {
+				return math.Sqrt(xa), nil
+			}, nil
+		})
 
-			y, err := args.GetFloat64("y")
+	if err != nil {
+		panic(err)
+	}
+
+	objectTanSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Tan returns the tangent of the radian argument x.
+	err = bloblang.RegisterFunctionV2("tan", objectTanSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			x, err := args.GetFloat64("x")
 			if err != nil {
 				return nil, err
 			}
 
-			ya := float64(y)
+			xa := float64(x)
 			return func() (interface{}, error) {
-				return math.Remainder(xa, ya), nil
+				return math.Tan(xa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectTruncSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
+	// Trunc returns the integer value of x.
+	err = bloblang.RegisterFunctionV2("trunc", objectTruncSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			x, err := args.GetFloat64("x")
+			if err != nil {
+				return nil, err
+			}
+
+			xa := float64(x)
+			return func() (interface{}, error) {
+				return math.Trunc(xa), nil
+			}, nil
+		})
+
+	if err != nil {
+		panic(err)
+	}
+
+	objectInfSpec := bloblang.NewPluginSpec().Param(bloblang.NewInt64Param("sign"))
+	// Inf returns positive infinity if sign &gt;= 0, negative infinity if sign &lt; 0.
+	err = bloblang.RegisterFunctionV2("inf", objectInfSpec,
+		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
+			sign, err := args.GetInt64("sign")
+			if err != nil {
+				return nil, err
+			}
+
+			signa := int(sign)
+			return func() (interface{}, error) {
+				return math.Inf(signa), nil
 			}, nil
 		})
 

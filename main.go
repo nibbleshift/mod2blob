@@ -8,7 +8,8 @@ import (
 
 type Config struct {
 	Package string `default:"" description:"Name of a go module such as 'math' or 'strings'"`
-	Prefix  string `default:"" description:"Prefix to use for function names"`
+	Prefix  string `default:"" description:"Prefix to use for function names. Format: [a-Z0-9]"`
+	Debug   bool   `default:"false" description:"Enable debug logging"`
 }
 
 func main() {

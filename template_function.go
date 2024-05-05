@@ -13,7 +13,7 @@ func init() {
 	var (
 		err error
 	)
-{{ range $k, $v := . }}
+{{ range $k, $v := . -}}
         {{ range $v }}
 	{{- $nArgs := len .Args -}}
 	{{- if gt $nArgs 0 -}}
@@ -22,8 +22,8 @@ func init() {
 		{{- range $i, $el := .Args -}}
 			{{if $i}}.{{end}}Param(bloblang.New{{ benthosType .Type}}Param("{{$el.Name}}"))
 		{{- end }}
-
-	err = bloblang.RegisterFunctionV2("{{ lower .Name}}", object{{.Name}}Spec,
+	// {{.Description}}
+	err = bloblang.RegisterFunctionV2("{{ getPrefix }}{{ lower .Name}}", object{{.Name}}Spec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			{{- $argStr := "" -}}
 			{{- range .Args -}}
