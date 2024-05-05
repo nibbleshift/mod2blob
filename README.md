@@ -13,7 +13,7 @@ mod2blob -package math
 
 This would generate math_function.go and math_method.go which an be compiled into Benthos as a plugin.
 
-For example, here is the auto-generated math_function.go:
+For example, here is the auto-generated math.go:
 
 ```go
 package bloblang
