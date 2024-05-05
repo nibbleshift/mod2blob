@@ -6,6 +6,7 @@ require (
 	github.com/42atomys/sprout v0.2.0
 	github.com/nibbleshift/argenv v0.7.2
 	gotest.tools/v3 v3.5.1
+	mvdan.cc/gofumpt v0.6.0
 )
 
 require (
@@ -19,5 +20,7 @@ require (
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
+	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
+	golang.org/x/tools v0.20.0 // indirect
 )

@@ -3,13 +3,14 @@ package main
 import (
 	"bytes"
 	"errors"
-	"go/format"
 	"html/template"
 	"log"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
+
+	"mvdan.cc/gofumpt/format"
 
 	"github.com/42atomys/sprout"
 )
@@ -484,7 +485,7 @@ func (pkg *Package) Generate() error {
 
 		var formatted []byte
 
-		formatted, err = format.Source(source.Bytes())
+		formatted, err = format.Source(source.Bytes(), format.Options{ExtraRules: true})
 
 		if err != nil {
 			panic(err)
