@@ -320,3 +320,54 @@ func Test_parseFunctionArguments(t *testing.T) {
 		})
 	}
 }
+
+func Test_toBenthosType(t *testing.T) {
+	var tests = []struct {
+		input    string
+		expected string
+	}{
+		{
+			input:    "float64",
+			expected: "Float64",
+		},
+		{
+			input:    "float32",
+			expected: "Float64",
+		},
+		{
+			input:    "float64",
+			expected: "Float64",
+		},
+		{
+			input:    "int",
+			expected: "Int64",
+		},
+		{
+			input:    "int32",
+			expected: "Int64",
+		},
+		{
+			input:    "int64",
+			expected: "Int64",
+		},
+		{
+			input:    "uint",
+			expected: "Int64",
+		},
+		{
+			input:    "uint32",
+			expected: "Int64",
+		},
+		{
+			input:    "uint64",
+			expected: "Int64",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			actual := toBenthosType(tt.input)
+			assert.DeepEqual(t, actual, tt.expected)
+		})
+	}
+}

@@ -355,7 +355,7 @@ func toBenthosType(typeStr string) string {
 	case "int", "int32", "int64", "uint", "uint32", "uint64":
 		return "Int64"
 	default:
-		return typeStr
+		return ""
 	}
 }
 
