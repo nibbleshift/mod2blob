@@ -19,14 +19,13 @@ For example, here is the auto-generated math_function.go:
 package bloblang
 
 import (
-	"github.com/benthosdev/benthos/v4/public/bloblang"
 	"math"
+
+	"github.com/benthosdev/benthos/v4/public/bloblang"
 )
 
 func init() {
-	var (
-		err error
-	)
+	var err error
 
 	objectAbsSpec := bloblang.NewPluginSpec().Param(bloblang.NewFloat64Param("x"))
 	// Abs returns the absolute value of x.
@@ -42,7 +41,6 @@ func init() {
 				return math.Abs(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +59,6 @@ func init() {
 				return math.Acos(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -80,7 +77,6 @@ func init() {
 				return math.Asin(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -99,7 +95,6 @@ func init() {
 				return math.Asinh(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -118,7 +113,6 @@ func init() {
 				return math.Cbrt(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -144,7 +138,6 @@ func init() {
 				return math.Copysign(fa, signa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -170,7 +163,6 @@ func init() {
 				return math.Dim(xa, ya), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -189,7 +181,6 @@ func init() {
 				return math.Erfc(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -208,7 +199,6 @@ func init() {
 				return math.Expm1(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -241,7 +231,6 @@ func init() {
 				return math.FMA(xa, ya, za), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -260,7 +249,6 @@ func init() {
 				return math.Float32bits(fa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -279,7 +267,6 @@ func init() {
 				return math.Float64bits(fa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -298,7 +285,6 @@ func init() {
 				return math.Floor(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -317,7 +303,6 @@ func init() {
 				return math.Gamma(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -343,7 +328,6 @@ func init() {
 				return math.Hypot(pa, qa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -362,7 +346,6 @@ func init() {
 				return math.J0(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -381,7 +364,6 @@ func init() {
 				return math.Lgamma(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -407,7 +389,6 @@ func init() {
 				return math.Max(xa, ya), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -433,7 +414,6 @@ func init() {
 				return math.Nextafter32(xa, ya), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -452,7 +432,6 @@ func init() {
 				return math.Round(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -471,7 +450,6 @@ func init() {
 				return math.Signbit(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -490,7 +468,6 @@ func init() {
 				return math.Sincos(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -509,7 +486,6 @@ func init() {
 				return math.Sqrt(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -528,7 +504,6 @@ func init() {
 				return math.Tan(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -547,7 +522,6 @@ func init() {
 				return math.Trunc(xa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
@@ -566,10 +540,7 @@ func init() {
 				return math.Inf(signa), nil
 			}, nil
 		})
-
 	if err != nil {
 		panic(err)
 	}
-
-}
-```
+}```
