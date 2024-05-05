@@ -81,7 +81,7 @@ func (p *Package) buildMap() error {
 			case "int64", "int32", "int":
 				_ = p.addToMap("method", "Int64", f)
 			default:
-				log.Println("Unsupported method type: " + f.Args[0].Type)
+				log.Printf("Unsupported function type: %+v\n", f)
 			}
 		}
 
@@ -92,7 +92,7 @@ func (p *Package) buildMap() error {
 			case "int64", "int32", "int":
 				_ = p.addToMap("function", "Int64", f)
 			default:
-				log.Println("Unsupported function type: " + f.Args[0].Type)
+				log.Printf("Unsupported function type: %+v\n", f)
 			}
 		}
 	}
