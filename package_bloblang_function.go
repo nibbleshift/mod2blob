@@ -5,8 +5,6 @@ package bloblang
 
 {{ $moduleName := "math" -}}
 import (
-	"log"
-
 	"{{getPackage}}"
 	"github.com/benthosdev/benthos/v4/public/bloblang"
 )
@@ -25,7 +23,7 @@ func init() {
 			{{if $i}}.{{end}}Param(bloblang.New{{ benthosType .Type}}Param("{{$el.Name}}"))
 		{{- end }}
 
-	err = bloblang.RegisterFunctionV2("{{.Name}}", object{{.Name}}Spec,
+	err = bloblang.RegisterFunctionV2("{{ lower .Name}}", object{{.Name}}Spec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			{{- $argStr := "" -}}
 			{{- range .Args -}}
@@ -34,7 +32,7 @@ func init() {
 			if err != nil {
 				return nil, err
 			}
-			
+
 			{{ .Name }}a := {{.Type}}({{.Name}})
 
 
