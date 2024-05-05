@@ -329,6 +329,10 @@ func parseFunction(def string) (*Function, error) {
 	}
 	match := pattern.FindStringSubmatch(def)
 
+	if len(match) == 0 {
+		return nil, ErrInvalidFunction
+	}
+
 	for i, name := range pattern.SubexpNames() {
 		// log.Printf("'%8s'\t %d -> %s\n", name, i, match[i])
 		// skip matches that are empty strings
@@ -380,7 +384,6 @@ func (pkg *Package) parseDoc() error {
 			function, err := parseFunction(lines[i])
 
 			if err != nil {
-				log.Println(err)
 				continue
 			}
 
@@ -441,6 +444,15 @@ func function(f *Function) Function {
 	return *f
 }
 
+func getFileName(name string) string {
+
+	if strings.Contains(name, "/") {
+		name = strings.Split(name, "/")[1]
+	}
+
+	return strings.ReplaceAll(name, "-", "_") + ".go"
+}
+
 func (pkg *Package) Generate() error {
 	customFuncs := map[string]any{
 		"benthosType": toBenthosType,
@@ -478,7 +490,7 @@ func (pkg *Package) Generate() error {
 			panic(err)
 		}
 
-		f, err := os.Create(pkg.Name + "_function.go")
+		f, err := os.Create(getFileName(pkg.Name))
 
 		if err != nil {
 			panic(err)
