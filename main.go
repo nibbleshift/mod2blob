@@ -18,14 +18,12 @@ func main() {
 	argenv.Init(config)
 
 	pkg, err := LoadPackage(config.Package, config.Prefix)
-
 	if err != nil {
 		log.Println("LoadPackage: " + err.Error())
 		return
 	}
 
 	err = pkg.Generate()
-
 	if err != nil {
 		log.Println("Generate: " + err.Error())
 		return

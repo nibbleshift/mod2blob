@@ -7,7 +7,7 @@ import (
 )
 
 func Test_parseFunction(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		definition string
 		expected   *Function
 		err        error
@@ -150,7 +150,7 @@ func Test_parseFunction(t *testing.T) {
 }
 
 func Test_parseReturn(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		definition string
 		expected   *Arg
 		err        error
@@ -181,7 +181,7 @@ func Test_parseReturn(t *testing.T) {
 }
 
 func Test_parseReturnArguments(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		definition string
 		expected   []Arg
 		err        error
@@ -233,7 +233,7 @@ func Test_parseReturnArguments(t *testing.T) {
 }
 
 func Test_parseArgument(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		definition string
 		expected   *Arg
 		err        error
@@ -266,7 +266,7 @@ func Test_parseArgument(t *testing.T) {
 }
 
 func Test_parseFunctionArguments(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		definition string
 		expected   []Arg
 		err        error
@@ -322,7 +322,7 @@ func Test_parseFunctionArguments(t *testing.T) {
 }
 
 func Test_toBenthosType(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		input    string
 		expected string
 	}{

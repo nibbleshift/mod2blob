@@ -62,7 +62,6 @@ func (f *Function) GetReturn() []Arg {
 }
 
 func (p *Package) addToMap(callType string, paramType string, f *Function) error {
-
 	if _, ok := p.Map[callType]; !ok {
 		p.Map[callType] = make(map[string][]*Function)
 	}
@@ -105,7 +104,6 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 	cmd := exec.Command("go", "doc", "-all", packageName)
 
 	stdout, err := cmd.Output()
-
 	if err != nil {
 		log.Println(packageName + ": " + err.Error())
 		return nil, err
@@ -117,14 +115,12 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 	pkg.Prefix = prefix
 
 	err = pkg.parseDoc()
-
 	if err != nil {
 		return nil, err
 	}
 
 	// build a map of functions, methods etc.
 	err = pkg.buildMap()
-
 	if err != nil {
 		return nil, err
 	}
@@ -141,9 +137,7 @@ func (pkg *Package) GetPrefix() string {
 }
 
 func parseReturn(arg string) (*Arg, error) {
-	var (
-		argType string
-	)
+	var argType string
 
 	// check for empty arg
 	if arg == "" {
@@ -218,9 +212,7 @@ func parseArgument(arg string) (*Arg, error) {
 }
 
 func parseFunctionArguments(args string) ([]Arg, error) {
-	var (
-		argObjectList []Arg
-	)
+	var argObjectList []Arg
 
 	// return if we get an empty string
 	if args == "" {
@@ -236,7 +228,6 @@ func parseFunctionArguments(args string) ([]Arg, error) {
 		// iterate through arguments and add each to the arg list
 		for _, arg := range arguments {
 			argObj, err := parseArgument(arg)
-
 			if err != nil {
 				return nil, err
 			}
@@ -245,7 +236,6 @@ func parseFunctionArguments(args string) ([]Arg, error) {
 	} else {
 		// single argument case
 		argObj, err := parseArgument(args)
-
 		if err != nil {
 			return nil, err
 		}
@@ -275,9 +265,7 @@ func parseFunctionArguments(args string) ([]Arg, error) {
 }
 
 func parseReturnArguments(args string) ([]Arg, error) {
-	var (
-		argObjectList []Arg
-	)
+	var argObjectList []Arg
 
 	args = strings.ReplaceAll(strings.ReplaceAll(args, "(", ""), ")", "")
 
@@ -295,7 +283,6 @@ func parseReturnArguments(args string) ([]Arg, error) {
 		// iterate through arguments and add each to the arg list
 		for _, arg := range arguments {
 			argObj, err := parseReturn(arg)
-
 			if err != nil {
 				return nil, err
 			}
@@ -304,7 +291,6 @@ func parseReturnArguments(args string) ([]Arg, error) {
 	} else {
 		// single argument case
 		argObj, err := parseReturn(args)
-
 		if err != nil {
 			return nil, err
 		}
@@ -345,7 +331,6 @@ func parseFunction(def string) (*Function, error) {
 			funcName = match[i]
 		case "args":
 			funcArgs, err = parseFunctionArguments(match[i])
-
 			if err != nil {
 				log.Printf("%s: err: %s\n", err.Error(), match[i])
 			}
@@ -383,7 +368,6 @@ func (pkg *Package) parseDoc() error {
 	for i := 0; i < len(lines); i += 2 {
 		if strings.HasPrefix(lines[i], "func") {
 			function, err := parseFunction(lines[i])
-
 			if err != nil {
 				continue
 			}
@@ -433,7 +417,6 @@ func (pkg *Package) parseDoc() error {
 				i++
 			}
 		}
-
 	}
 
 	pkg.Functions = functions
@@ -446,7 +429,6 @@ func function(f *Function) Function {
 }
 
 func getFileName(name string) string {
-
 	if strings.Contains(name, "/") {
 		name = strings.Split(name, "/")[1]
 	}
@@ -472,13 +454,11 @@ func (pkg *Package) Generate() error {
 			Funcs(sprout.FuncMap()).
 			Funcs(customFuncs).
 			Parse(FunctionTemplate)
-
 		if err != nil {
 			panic(err)
 		}
 
 		err = funcTmpl.Execute(&source, pkg.Map["function"])
-
 		if err != nil {
 			panic(err)
 		}
@@ -486,20 +466,17 @@ func (pkg *Package) Generate() error {
 		var formatted []byte
 
 		formatted, err = format.Source(source.Bytes(), format.Options{ExtraRules: true})
-
 		if err != nil {
 			panic(err)
 		}
 
 		f, err := os.Create(getFileName(pkg.Name))
-
 		if err != nil {
 			panic(err)
 		}
 		defer f.Close()
 
 		_, err = f.Write(formatted)
-
 		if err != nil {
 			panic(err)
 		}
@@ -533,6 +510,7 @@ func (pkg *Package) Generate() error {
 
 	return nil
 }
+
 func (pkg *Package) ListFunctions() []Function {
 	return nil
 }
