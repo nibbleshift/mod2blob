@@ -26,6 +26,7 @@ type Package struct {
 	Functions []*Function
 	Name      string
 	Prefix    string
+	Constants []Constant
 	// map[method|function][String|Bytes|Int64|Float64|etc]*Function
 	Map map[string]map[string][]*Function
 }
@@ -33,6 +34,11 @@ type Package struct {
 type Arg struct {
 	Name string
 	Type string
+}
+
+type Constant struct {
+	Name  string
+	Value string
 }
 
 type Function struct {
@@ -318,11 +324,10 @@ func parseFunction(def string) (*Function, error) {
 	)
 	pattern := regexp.MustCompile(`^func (?P<funcName>\S+)\((?P<args>.*?)\)(?P<return>.*)`)
 
-	match := pattern.FindStringSubmatch(def)
-
 	if def == "" {
 		return nil, ErrEmptyString
 	}
+	match := pattern.FindStringSubmatch(def)
 
 	for i, name := range pattern.SubexpNames() {
 		// log.Printf("'%8s'\t %d -> %s\n", name, i, match[i])
@@ -386,6 +391,43 @@ func (pkg *Package) parseDoc() error {
 			functions = append(functions, function)
 
 			log.Printf("Added function %s:%s\n", function.Name, function.Description)
+		} else if strings.HasPrefix(lines[i], "const (") {
+			i++ // skip passed the const ( line
+			for i < len(lines) {
+				// if "//" exists within a string this will cause a problem
+				if strings.Contains(lines[i], "//") {
+					lines[i] = strings.Split(lines[i], "//")[0]
+				}
+				pattern := regexp.MustCompile(`\s+(?P<name>\S+)\s+=\s+(?P<value>.*)`)
+				match := pattern.FindStringSubmatch(lines[i])
+
+				if len(match) > 0 {
+					var (
+						name  string
+						value string
+					)
+
+					for j, expName := range pattern.SubexpNames() {
+						// log.Printf("'%8s'\t %d -> %s\n", name, i, match[i])
+						// skip matches that are empty strings
+						if match[j] == "" {
+							continue
+						}
+						switch expName {
+						case "name":
+							name = match[j]
+						case "value":
+							value = match[j]
+						}
+					}
+
+					pkg.Constants = append(pkg.Constants, Constant{Name: name, Value: value})
+				}
+				if strings.HasPrefix(lines[i], ")") {
+					break
+				}
+				i++
+			}
 		}
 
 	}
