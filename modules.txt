@@ -18,9 +18,9 @@ github.com/polera/gonameparts
 github.com/razorpay/go-financial
 github.com/uber/h3-go
 github.com/zRedShift/mimemagic
-pkg.go.dev/bytes
-pkg.go.dev/github.com/alpeb/go-finance/fin
-pkg.go.dev/github.com/MaxHalford/eaopt
-pkg.go.dev/github.com/spatial-go/geoos
-pkg.go.dev/strings
-pkg.go.dev/text/template
+github.com/alpeb/go-finance/fin
+github.com/MaxHalford/eaopt
+github.com/spatial-go/geoos
+bytes
+strings
+text/template
