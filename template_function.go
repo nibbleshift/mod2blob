@@ -14,7 +14,6 @@ func init() {
 		err error
 	)
 {{ range $k, $v := . -}}
-        {{ range $v }}
 	{{- $nArgs := len .Args -}}
 	{{- if gt $nArgs 0 -}}
 	{{- $funcName := .Name }}
@@ -28,7 +27,11 @@ func init() {
 			{{- $argStr := "" -}}
 			{{- range .Args -}}
 			{{- $bType := benthosType .Type }}
-			{{.Name}}, err := args.Get{{ $bType }}("{{ .Name }}")
+			{{- $getType := $bType }}
+			{{- if eq $getType "Any" }}
+			{{ $getType = "" }}
+			{{ end }}
+			{{.Name}}, err := args.Get{{ $getType }}("{{ .Name }}")
 			if err != nil {
 				return nil, err
 			}
@@ -52,6 +55,5 @@ func init() {
 		panic(err)
 	}
 	{{ end }}
-{{- end }}
 {{- end }}
 }`

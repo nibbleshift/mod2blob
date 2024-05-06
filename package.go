@@ -24,9 +24,12 @@ var (
 )
 
 var native = []string{
-	"int", "uint", "int8", "uint8", "int16", "uint16", "int32", "int64", "uint64",
+	"int", "uint", "int8", "uint8", "int16", "uint16", "int32", "uint32", "int64", "uint64",
 	"float", "float32", "float64",
-	"string", "byte", "rune",
+	"string", "byte", "rune", "bool",
+	"[]int", "[]uint", "[]int8", "[]uint8", "[]int16", "[]uint16", "[]int32", "[]uint32", "[]int64", "[]uint64",
+	"float", "[]float32", "[]float64",
+	"string", "[]byte", "[]rune", "[]bool",
 }
 
 type Package struct {
@@ -35,8 +38,8 @@ type Package struct {
 	Name      string
 	Prefix    string
 	Constants []Constant
-	// map[method|function][String|Bytes|Int64|Float64|etc]*Function
-	Map map[string]map[string][]*Function
+	// map[method|function][]*Function
+	Map map[string][]*Function
 }
 
 type Arg struct {
@@ -68,12 +71,13 @@ func (f *Function) GetReturn() []Arg {
 	return f.Return
 }
 
-func (p *Package) addToMap(callType string, paramType string, f *Function) error {
+func (p *Package) addToMap(callType string, f *Function) error {
 	if _, ok := p.Map[callType]; !ok {
-		p.Map[callType] = make(map[string][]*Function)
+		p.Map = make(map[string][]*Function)
 	}
 
-	p.Map[callType][paramType] = append(p.Map[callType][paramType], f)
+	p.Map[callType] = append(p.Map[callType], f)
+
 	return nil
 }
 
@@ -81,6 +85,10 @@ func (p *Package) addToMap(callType string, paramType string, f *Function) error
 // only primitive types
 func checkValidFunction(f *Function) bool {
 	if f == nil {
+		return false
+	}
+
+	if len(f.Args) == 0 {
 		return false
 	}
 
@@ -98,26 +106,17 @@ func checkValidFunction(f *Function) bool {
 	return true
 }
 func (p *Package) buildMap() error {
-	p.Map = make(map[string]map[string][]*Function)
+	p.Map = make(map[string][]*Function)
 
 	for _, f := range p.Functions {
 		if !checkValidFunction(f) {
+			log.Printf("Skipped function %+v Args:%v Return:%v\n", f.Name, f.Args, f.Return)
 			continue
 		}
 
 		if len(f.Args) > 0 {
-			switch f.Args[0].Type {
-			case "float64", "float32":
-				_ = p.addToMap("function", "Float64", f)
-			case "int64", "int32", "int":
-				_ = p.addToMap("function", "Int64", f)
-			case "bool":
-				_ = p.addToMap("function", "Bool", f)
-			case "string":
-				_ = p.addToMap("function", "String", f)
-			default:
-				log.Printf("Unsupported function type: %+v\n", f)
-			}
+			_ = p.addToMap("function", f)
+			log.Printf("Added function %+v Args:%v Return:%v\n", f.Name, f.Args, f.Return)
 		}
 	}
 	return nil
@@ -378,10 +377,12 @@ func toBenthosType(typeStr string) string {
 	switch typeStr {
 	case "float", "float32", "float64":
 		return "Float64"
-	case "int", "int32", "int64", "uint", "uint32", "uint64":
+	case "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64":
 		return "Int64"
 	case "string":
 		return "String"
+	case "[]byte":
+		return "Any"
 	default:
 		return typeStr
 	}
@@ -404,7 +405,6 @@ func (pkg *Package) parseDoc() error {
 
 			functions = append(functions, function)
 
-			log.Printf("Added function %s:%s\n", function.Name, function.Description)
 		} else if strings.HasPrefix(lines[i], "const (") {
 			i++ // skip passed the const ( line
 			for i < len(lines) {
