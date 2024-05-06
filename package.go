@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"slices"
 	"strings"
 
 	"mvdan.cc/gofumpt/format"
@@ -21,6 +22,12 @@ var (
 	ErrEmptyString      = errors.New("string is empty")
 	ErrInvalidArguments = errors.New("invalid function arguments")
 )
+
+var native = []string{
+	"int", "uint", "int8", "uint8", "int16", "uint16", "int32", "int64", "uint64",
+	"float", "float32", "float64",
+	"string", "byte", "rune",
+}
 
 type Package struct {
 	raw       []byte
@@ -70,19 +77,32 @@ func (p *Package) addToMap(callType string, paramType string, f *Function) error
 	return nil
 }
 
+// Check to see if function accepts and returns
+// only primitive types
+func checkValidFunction(f *Function) bool {
+	if f == nil {
+		return false
+	}
+
+	for _, r := range f.Return {
+		if !slices.Contains(native, r.Type) {
+			return false
+		}
+	}
+
+	for _, a := range f.Args {
+		if !slices.Contains(native, a.Type) {
+			return false
+		}
+	}
+	return true
+}
 func (p *Package) buildMap() error {
 	p.Map = make(map[string]map[string][]*Function)
 
 	for _, f := range p.Functions {
-		if len(f.Args) == 1 {
-			switch f.Args[0].Type {
-			case "float64", "float32":
-				_ = p.addToMap("method", "Float64", f)
-			case "int64", "int32", "int":
-				_ = p.addToMap("method", "Int64", f)
-			default:
-				log.Printf("Unsupported function type: %+v\n", f)
-			}
+		if !checkValidFunction(f) {
+			continue
 		}
 
 		if len(f.Args) > 0 {
@@ -91,6 +111,10 @@ func (p *Package) buildMap() error {
 				_ = p.addToMap("function", "Float64", f)
 			case "int64", "int32", "int":
 				_ = p.addToMap("function", "Int64", f)
+			case "bool":
+				_ = p.addToMap("function", "Bool", f)
+			case "string":
+				_ = p.addToMap("function", "String", f)
 			default:
 				log.Printf("Unsupported function type: %+v\n", f)
 			}
@@ -356,6 +380,8 @@ func toBenthosType(typeStr string) string {
 		return "Float64"
 	case "int", "int32", "int64", "uint", "uint32", "uint64":
 		return "Int64"
+	case "string":
+		return "String"
 	default:
 		return typeStr
 	}
