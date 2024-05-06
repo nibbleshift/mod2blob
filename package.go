@@ -125,9 +125,20 @@ func (pkg *Package) buildMap() error {
 
 func LoadPackage(packageName string, prefix string) (*Package, error) {
 	pkg := &Package{}
-	cmd := exec.Command("go", "doc", "-all", packageName)
+	goget := exec.Command("go", "doc", "-all", packageName)
+	goget.Env = os.Environ()
+	goget.Env = append(goget.Env, "GO111MODULE=off")
 
-	stdout, err := cmd.Output()
+	_, err := goget.Output()
+	if err != nil {
+		log.Println(packageName + ": " + err.Error())
+		return nil, err
+	}
+	godoc := exec.Command("go", "doc", "-all", packageName)
+	godoc.Env = os.Environ()
+	godoc.Env = append(godoc.Env, "GO111MODULE=off")
+
+	stdout, err := godoc.Output()
 	if err != nil {
 		log.Println(packageName + ": " + err.Error())
 		return nil, err
@@ -457,7 +468,8 @@ func function(f *Function) Function {
 
 func getFileName(name string) string {
 	if strings.Contains(name, "/") {
-		name = strings.Split(name, "/")[1]
+		tmp := strings.Split(name, "/")
+		name = tmp[len(tmp)-1]
 	}
 
 	return strings.ReplaceAll(name, "-", "_") + ".go"
