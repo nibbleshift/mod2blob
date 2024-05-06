@@ -71,12 +71,12 @@ func (f *Function) GetReturn() []Arg {
 	return f.Return
 }
 
-func (p *Package) addToMap(callType string, f *Function) error {
-	if _, ok := p.Map[callType]; !ok {
-		p.Map = make(map[string][]*Function)
+func (pkg *Package) addToMap(callType string, f *Function) error {
+	if _, ok := pkg.Map[callType]; !ok {
+		pkg.Map = make(map[string][]*Function)
 	}
 
-	p.Map[callType] = append(p.Map[callType], f)
+	pkg.Map[callType] = append(pkg.Map[callType], f)
 
 	return nil
 }
@@ -105,17 +105,18 @@ func checkValidFunction(f *Function) bool {
 	}
 	return true
 }
-func (p *Package) buildMap() error {
-	p.Map = make(map[string][]*Function)
 
-	for _, f := range p.Functions {
+func (pkg *Package) buildMap() error {
+	pkg.Map = make(map[string][]*Function)
+
+	for _, f := range pkg.Functions {
 		if !checkValidFunction(f) {
 			log.Printf("Skipped function %+v Args:%v Return:%v\n", f.Name, f.Args, f.Return)
 			continue
 		}
 
 		if len(f.Args) > 0 {
-			_ = p.addToMap("function", f)
+			_ = pkg.addToMap("function", f)
 			log.Printf("Added function %+v Args:%v Return:%v\n", f.Name, f.Args, f.Return)
 		}
 	}
