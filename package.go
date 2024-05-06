@@ -356,12 +356,12 @@ func parseFunction(def string) (*Function, error) {
 		case "args":
 			funcArgs, err = parseFunctionArguments(match[i])
 			if err != nil {
-				log.Printf("%s: err: %s\n", err.Error(), match[i])
+				break
 			}
 		case "return":
 			funcReturn, err = parseReturnArguments(match[i])
 			if err != nil {
-				log.Println(err)
+				break
 			}
 		}
 	}
