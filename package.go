@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"html/template"
 	"log"
 	"os"
@@ -168,7 +167,7 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 
 			_ = os.MkdirAll(packageDir, 0o755)
 
-			gitUrl := fmt.Sprintf("https://%s", packageName)
+			gitUrl := "https://" + packageName
 
 			_, err := git.PlainClone(packageDir, false, &git.CloneOptions{
 				URL:               gitUrl,
