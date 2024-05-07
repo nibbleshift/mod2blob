@@ -3,10 +3,12 @@ package main
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"html/template"
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 	"slices"
 	"strings"
@@ -14,6 +16,7 @@ import (
 	"mvdan.cc/gofumpt/format"
 
 	"github.com/42atomys/sprout"
+	"github.com/go-git/go-git/v5"
 )
 
 var (
@@ -21,6 +24,7 @@ var (
 	ErrFunctionNoReturn = errors.New("function has no return values")
 	ErrEmptyString      = errors.New("string is empty")
 	ErrInvalidArguments = errors.New("invalid function arguments")
+	ErrCloneFailed      = errors.New("git clone failed")
 )
 
 var native = []string{
@@ -123,16 +127,57 @@ func (pkg *Package) buildMap() error {
 	return nil
 }
 
+func checkIfDownloaded(packageName string) bool {
+	gopath := os.Getenv("GOPATH")
+
+	// if there are no "/", then it should be a module in the runtime
+	if !strings.Contains(gopath, "/") {
+		return true
+	}
+
+	packageDir := path.Join(gopath, "src", packageName)
+
+	log.Println(packageDir)
+	_, err := os.Stat(packageDir)
+
+	if err == nil {
+		return true
+	}
+
+	if os.IsExist(err) {
+		return true
+	}
+
+	return false
+}
+
 func LoadPackage(packageName string, prefix string) (*Package, error) {
 	pkg := &Package{}
 
 	// if module does not have slash, assume it is a runtime pkg
-	if strings.Contains(packageName, "/") {
-		goget := exec.Command("go", "mod", "download", packageName)
-		_, err := goget.Output()
-		if err != nil {
-			log.Println("Failed loading package: " + packageName)
-			return nil, err
+	if strings.Count(packageName, "/") > 1 {
+		goPath := os.Getenv("GOPATH")
+
+		if goPath == "" {
+			log.Println("GOPATH must be set")
+			return nil, ErrEmptyString
+		}
+
+		if !checkIfDownloaded(packageName) {
+			packageDir := path.Join(goPath, "src", packageName)
+
+			_ = os.MkdirAll(packageDir, 0o755)
+
+			gitUrl := fmt.Sprintf("https://%s", packageName)
+
+			_, err := git.PlainClone(packageDir, false, &git.CloneOptions{
+				URL:               gitUrl,
+				RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+			})
+			if err != nil {
+				log.Println("Fetching module failed: " + err.Error())
+				return nil, ErrCloneFailed
+			}
 		}
 	}
 
@@ -142,13 +187,12 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 		if len(parts) > 0 {
 			packageName = parts[0]
 		}
-	} else {
-		log.Println("Package name requires @version")
 	}
 
 	godoc := exec.Command("go", "doc", "-all", packageName)
 	godoc.Env = os.Environ()
 	godoc.Env = append(godoc.Env, "GO111MODULE=off")
+
 	stdout, err := godoc.Output()
 	if err != nil {
 		log.Println(packageName + ": " + err.Error())
