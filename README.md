@@ -9,11 +9,11 @@ This package aims to quickly generate [Bloblang](https://www.benthos.dev/docs/gu
 
 * Golang (tested with 1.22.2)
 
-## Examples
+## Usage
 
 Generate code from go standard library package:
 ```bash
-mod2blob -package math
+mod2blob -package strings
 ```
 
 Generate code from package on github:
@@ -21,8 +21,15 @@ Generate code from package on github:
 mod2blob -package github.com/hbollon/go-edlib
 ```
 
-Note: When download packages from remote repositories, the module will be cloned into $GOPATH/src.  You must have GOPATH set to a location that is writable.
+Note: When specifying packages from remote repositories, the module will be cloned into $GOPATH/src.  You must have GOPATH set to a location that is writable.
 
+
+## Example
+
+To generate a bloblang plugin from the math package, we would run the following command:
+```go
+mod2blob -package strings
+```
 
 This would generate math.go which can be compiled into Benthos as a bloblang plugin.
 
