@@ -65,5 +65,6 @@ func init() {
 		panic(err)
 	}
 
-      // ....code clipped for brevity
+      // ....code clipped
+}
 ```
