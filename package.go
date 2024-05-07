@@ -167,10 +167,10 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 
 			_ = os.MkdirAll(packageDir, 0o755)
 
-			gitUrl := "https://" + packageName
+			gitURL := "https://" + packageName
 
 			_, err := git.PlainClone(packageDir, false, &git.CloneOptions{
-				URL:               gitUrl,
+				URL:               gitURL,
 				RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 			})
 			if err != nil {
