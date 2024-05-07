@@ -447,7 +447,11 @@ func toBenthosType(typeStr string) string {
 		return "Int64"
 	case "string":
 		return "String"
-	case "[]byte":
+	case "[]byte", "[]string":
+		return "Any"
+	case "[]int", "[]int8", "[]int16", "[]int32", "[]int64", "[]uint", "[]uint8", "[]uint16", "[]uint32", "[]uint64":
+		return "Any"
+	case "[]float", "[]float32", "[]float64":
 		return "Any"
 	default:
 		return typeStr
