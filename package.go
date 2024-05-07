@@ -128,7 +128,7 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 
 	// if module does not have slash, assume it is a runtime pkg
 	if strings.Contains(packageName, "/") {
-		goget := exec.Command("go", "get", packageName)
+		goget := exec.Command("go", "mod", "download", packageName)
 		_, err := goget.Output()
 		if err != nil {
 			log.Println("Failed loading package: " + packageName)
@@ -136,7 +136,19 @@ func LoadPackage(packageName string, prefix string) (*Package, error) {
 		}
 	}
 
+	if strings.Contains(packageName, "@") {
+		parts := strings.Split(packageName, "@")
+
+		if len(parts) > 0 {
+			packageName = parts[0]
+		}
+	} else {
+		log.Println("Package name requires @version")
+	}
+
 	godoc := exec.Command("go", "doc", "-all", packageName)
+	godoc.Env = os.Environ()
+	godoc.Env = append(godoc.Env, "GO111MODULE=off")
 	stdout, err := godoc.Output()
 	if err != nil {
 		log.Println(packageName + ": " + err.Error())
