@@ -19,7 +19,6 @@ func main() {
 
 	pkg, err := LoadPackage(config.Package, config.Prefix)
 	if err != nil {
-		log.Println("LoadPackage: " + err.Error())
 		return
 	}
 

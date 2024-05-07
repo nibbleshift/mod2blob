@@ -125,19 +125,18 @@ func (pkg *Package) buildMap() error {
 
 func LoadPackage(packageName string, prefix string) (*Package, error) {
 	pkg := &Package{}
-	goget := exec.Command("go", "doc", "-all", packageName)
-	goget.Env = os.Environ()
-	goget.Env = append(goget.Env, "GO111MODULE=off")
 
-	_, err := goget.Output()
-	if err != nil {
-		log.Println(packageName + ": " + err.Error())
-		return nil, err
+	// if module does not have slash, assume it is a runtime pkg
+	if strings.Contains(packageName, "/") {
+		goget := exec.Command("go", "get", packageName)
+		_, err := goget.Output()
+		if err != nil {
+			log.Println("Failed loading package: " + packageName)
+			return nil, err
+		}
 	}
-	godoc := exec.Command("go", "doc", "-all", packageName)
-	godoc.Env = os.Environ()
-	godoc.Env = append(godoc.Env, "GO111MODULE=off")
 
+	godoc := exec.Command("go", "doc", "-all", packageName)
 	stdout, err := godoc.Output()
 	if err != nil {
 		log.Println(packageName + ": " + err.Error())
