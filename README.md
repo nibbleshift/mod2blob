@@ -28,7 +28,7 @@ Note: When specifying modules from remote repositories, the module will be clone
 
 To generate a bloblang plugin from the math module, we would run the following command:
 ```go
-mod2blob -module strings
+mod2blob -module math
 ```
 
 This would generate math.go which can be compiled into Benthos as a bloblang plugin.
