@@ -3,7 +3,7 @@
 **This is considered pre-alpha**
 
 ## Overview
-This package aims to quickly generate [Bloblang](https://www.benthos.dev/docs/guides/bloblang/about/) [functions](https://www.benthos.dev/docs/guides/bloblang/functions) and [methods](https://www.benthos.dev/docs/guides/bloblang/methods) for use in [Benthos](https://www.benthos.dev). The tool, mod2blob, will accept a package argument `-package` (or env PACKAGE) that specifies the name of a golang module, such as `math` or `hbollon/go-edlib`. The tool will then parse all exported functions and generate bloblang functions and methods from that module.
+This module aims to quickly generate [Bloblang](https://www.benthos.dev/docs/guides/bloblang/about/) [functions](https://www.benthos.dev/docs/guides/bloblang/functions) and [methods](https://www.benthos.dev/docs/guides/bloblang/methods) for use in [Benthos](https://www.benthos.dev). The tool, mod2blob, will accept a module argument `-module` (or env MODULE) that specifies the name of a golang module, such as `math` or `hbollon/go-edlib`. The tool will then parse all exported functions and generate bloblang functions and methods from that module.
 
 ## Dependencies
 
@@ -11,24 +11,24 @@ This package aims to quickly generate [Bloblang](https://www.benthos.dev/docs/gu
 
 ## Usage
 
-Generate code from go standard library package:
+Generate code from go standard library module:
 ```bash
-mod2blob -package strings
+mod2blob -module strings
 ```
 
-Generate code from package on github:
+Generate code from module on github:
 ```bash
-mod2blob -package github.com/hbollon/go-edlib
+mod2blob -module github.com/hbollon/go-edlib
 ```
 
-Note: When specifying packages from remote repositories, the module will be cloned into $GOPATH/src.  You must have GOPATH set to a location that is writable.
+Note: When specifying modules from remote repositories, the module will be cloned into $GOPATH/src.  You must have GOPATH set to a location that is writable.
 
 
 ## Example
 
-To generate a bloblang plugin from the math package, we would run the following command:
+To generate a bloblang plugin from the math module, we would run the following command:
 ```go
-mod2blob -package strings
+mod2blob -module strings
 ```
 
 This would generate math.go which can be compiled into Benthos as a bloblang plugin.
