@@ -136,7 +136,6 @@ func checkIfDownloaded(packageName string) bool {
 
 	packageDir := path.Join(gopath, "src", packageName)
 
-	log.Println(packageDir)
 	_, err := os.Stat(packageDir)
 
 	if err == nil {
