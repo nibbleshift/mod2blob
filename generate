@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ ! -f ./mod2blob ]; then
+	./build;
+fi
+
+pushd test/bloblang
+
+for i in `cat ../../modules`; do
+	../../mod2blob -module $i
+	if [ $? -ne 0 ]; then
+		break
+	fi
+done
+
+popd

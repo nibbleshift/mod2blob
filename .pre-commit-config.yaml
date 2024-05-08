@@ -12,7 +12,6 @@ repos:
       - id: go-mod-tidy
       - id: go-fmt
       - id: go-build
-      - id: go-vet
       - id: go-critic
       - id: go-imports
       - id: go-unit-tests

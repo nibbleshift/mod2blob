@@ -1,11 +1,11 @@
-package main
+package gen
 
-var FunctionTemplate string = `
+var Function string = `
 package bloblang
 
 {{ $moduleName := "math" -}}
 import (
-	"{{getPackage}}"
+	"{{getModule}}"
 	"github.com/benthosdev/benthos/v4/public/bloblang"
 )
 

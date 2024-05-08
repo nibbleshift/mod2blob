@@ -1,6 +1,6 @@
-package main
+package gen
 
-var MethodTemplate string = `
+var Method string = `
 package bloblang
 
 {{ $moduleName := .Name -}}

@@ -1,0 +1,19 @@
+logger:
+  level: error
+input:
+  generate:
+    mapping: |
+      root = {}
+    interval: 1s
+    count: 1
+    batch_size: 1
+
+pipeline:
+  processors:
+    - mapping: |
+        root = this
+        root.atan = atan2(200,5)
+        root.dim = dim(100,5)
+        root.fma = fma(22, 18, 48)
+output:
+  stdout: {}

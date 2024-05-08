@@ -4,12 +4,13 @@ import (
 	"log"
 
 	"github.com/nibbleshift/argenv"
+	"github.com/nibbleshift/mod2blob/internal/module"
 )
 
 type Config struct {
-	Package string `default:"" description:"Name of a go module such as 'math' or 'strings'"`
-	Prefix  string `default:"" description:"Prefix to use for function names. Format: [a-Z0-9]"`
-	Debug   bool   `default:"false" description:"Enable debug logging"`
+	Module string `default:"" description:"Name of a go module such as 'math' or 'strings'"`
+	Prefix string `default:"" description:"Prefix to use for function names. Format: [a-Z0-9]"`
+	Debug  bool   `default:"false" description:"Enable debug logging"`
 }
 
 func main() {
@@ -17,7 +18,7 @@ func main() {
 	config := &Config{}
 	argenv.Init(config)
 
-	pkg, err := LoadPackage(config.Package, config.Prefix)
+	pkg, err := module.LoadModule(config.Module, config.Prefix)
 	if err != nil {
 		return
 	}
