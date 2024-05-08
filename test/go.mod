@@ -2,10 +2,7 @@ module github.com/nibbleshift/mod2blob/test
 
 go 1.22.2
 
-require (
-	github.com/benthosdev/benthos-plugin-example v0.0.0-20230812135600-046510828869
-	github.com/benthosdev/benthos/v4 v4.27.0
-)
+require github.com/benthosdev/benthos/v4 v4.27.0
 
 require (
 	cuelang.org/go v0.8.2 // indirect

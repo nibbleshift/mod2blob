@@ -12,8 +12,6 @@ github.com/OneOfOne/xxhash v1.2.8 h1:31czK/TI9sNkxIKfaUfGlU47BAxQ0ztGgd9vPyqimf8
 github.com/OneOfOne/xxhash v1.2.8/go.mod h1:eZbhyaAYD41SGSSsnmcpxVoRiQ/MPUTjUdIIOT9Um7Q=
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
-github.com/benthosdev/benthos-plugin-example v0.0.0-20230812135600-046510828869 h1:Ne2CGLqqmcWntSuUhWlP81Ioiz2EkEeSxC5bCmkUfNY=
-github.com/benthosdev/benthos-plugin-example v0.0.0-20230812135600-046510828869/go.mod h1:cCkFwWh5KMMr9yMno2wNaHBJQxobgi9wKnSFklC8oIU=
 github.com/benthosdev/benthos/v4 v4.27.0 h1:Z5FiVvJL/NAu9QveMI7c+DsWDJWxjLjuEzkXjMhJOWw=
 github.com/benthosdev/benthos/v4 v4.27.0/go.mod h1:RVwc2qyKEzGU+knon8KMlKGXPLFiJeEA7OIhnesE9wk=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
