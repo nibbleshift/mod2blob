@@ -3,6 +3,7 @@ package module
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -47,12 +48,11 @@ func (mod *Module) buildMap() error {
 
 func gitClone(moduleURL string) error {
 	packageDir, err := getModuleSrcPath(moduleURL)
-
 	if err != nil {
 		return err
 	}
 
-	_ = os.MkdirAll(packageDir, 0755)
+	_ = os.MkdirAll(packageDir, 0o755)
 
 	gitURL := "https://" + moduleURL
 
@@ -73,7 +73,6 @@ func runGoDoc(modulePath string) ([]byte, error) {
 	godoc.Env = append(godoc.Env, "GO111MODULE=off")
 
 	docStr, err := godoc.Output()
-
 	if err != nil {
 		log.Println(modulePath + ": " + err.Error())
 		return nil, err
@@ -101,20 +100,17 @@ func getModuleName(moduleURL string) (string, error) {
 	}
 
 	modulePath, err := getModuleSrcPath(moduleURL)
-
 	if err != nil {
 		return "", err
 	}
 
 	files, err := filepath.Glob(modulePath + "/*.go")
-
 	if err != nil {
 		return "", err
 	}
 
 	for _, f := range files {
 		f, err := os.Open(f)
-
 		if err != nil {
 			continue
 		}
@@ -142,11 +138,13 @@ func getModuleName(moduleURL string) (string, error) {
 	}
 
 	if moduleName == "" {
-		return "", ErrEmptyString
+		fmt.Println("cant get moduleName")
+		return moduleURL, nil
 	}
 
 	return moduleName, nil
 }
+
 func LoadModule(modulePath string, prefix string) (*Module, error) {
 	var (
 		err    error
@@ -159,22 +157,22 @@ func LoadModule(modulePath string, prefix string) (*Module, error) {
 	if strings.Count(modulePath, "/") > 1 {
 		if !checkIfDownloaded(modulePath) {
 			err = gitClone(modulePath)
-
 			if err != nil {
+				fmt.Println(err)
 				return nil, err
 			}
 		}
 	}
 
 	docStr, err = runGoDoc(modulePath)
-
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
 	moduleName, err := getModuleName(modulePath)
-
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -185,6 +183,7 @@ func LoadModule(modulePath string, prefix string) (*Module, error) {
 
 	err = mod.parseDoc()
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
