@@ -20,6 +20,7 @@ func main() {
 
 	pkg, err := module.LoadModule(config.Module, config.Prefix)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 

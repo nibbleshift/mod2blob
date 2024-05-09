@@ -93,6 +93,13 @@ func getModuleSrcPath(moduleUrl string) (string, error) {
 
 func getModuleName(moduleUrl string) (string, error) {
 	var moduleName string
+
+	// This should be better, if it is a runtime package
+	// then we dont need to look for the module name
+	if strings.Count(moduleUrl, "/") < 2 {
+		return moduleUrl, nil
+	}
+
 	modulePath, err := getModuleSrcPath(moduleUrl)
 
 	if err != nil {

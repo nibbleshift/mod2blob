@@ -53,6 +53,6 @@
 #github.com/spatial-go/geoos
 #github.com/montanaflynn/stats
 #bytes
-#strings
+strings
 #text/template
 math
