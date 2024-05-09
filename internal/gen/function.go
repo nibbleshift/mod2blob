@@ -3,9 +3,8 @@ package gen
 var Function string = `
 package bloblang
 
-{{ $moduleName := "math" -}}
 import (
-	"{{getModule}}"
+	"{{getModulePath}}"
 	"github.com/benthosdev/benthos/v4/public/bloblang"
 )
 
@@ -47,7 +46,7 @@ func init() {
 			{{ end -}}
 
 			return func() (interface{}, error) {
-				return {{$moduleName}}.{{$funcName}}({{ $argStr }}), nil
+				return {{getModuleName}}.{{$funcName}}({{ $argStr }}), nil
 			}, nil
 	})
 

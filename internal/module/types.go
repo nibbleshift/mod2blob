@@ -4,6 +4,7 @@ type Module struct {
 	raw       []byte
 	Functions []*Function
 	Name      string
+	Path      string
 	Prefix    string
 	Constants []Constant
 	// map[method|function][]*Function

@@ -1,11 +1,13 @@
 package module
 
 import (
+	"bufio"
 	"bytes"
 	"log"
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"text/template"
@@ -43,57 +45,135 @@ func (mod *Module) buildMap() error {
 	return nil
 }
 
-func LoadModule(packageName string, prefix string) (*Module, error) {
+func gitClone(moduleUrl string) error {
+	packageDir, err := getModuleSrcPath(moduleUrl)
+
+	if err != nil {
+		return err
+	}
+
+	_ = os.MkdirAll(packageDir, 0755)
+
+	gitURL := "https://" + moduleUrl
+
+	_, err = git.PlainClone(packageDir, false, &git.CloneOptions{
+		URL:               gitURL,
+		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+	})
+	if err != nil {
+		log.Println("Fetching module failed: " + err.Error())
+		return ErrCloneFailed
+	}
+	return nil
+}
+
+func runGoDoc(modulePath string) ([]byte, error) {
+	godoc := exec.Command("go", "doc", "-all", modulePath)
+	godoc.Env = os.Environ()
+	godoc.Env = append(godoc.Env, "GO111MODULE=off")
+
+	docStr, err := godoc.Output()
+
+	if err != nil {
+		log.Println(modulePath + ": " + err.Error())
+		return nil, err
+	}
+	return docStr, nil
+}
+
+func getModuleSrcPath(moduleUrl string) (string, error) {
+	goPath := os.Getenv("GOPATH")
+
+	if goPath == "" {
+		log.Println("GOPATH must be set")
+		return "", ErrEmptyString
+	}
+	return path.Join(goPath, "src", moduleUrl), nil
+}
+
+func getModuleName(moduleUrl string) (string, error) {
+	var moduleName string
+	modulePath, err := getModuleSrcPath(moduleUrl)
+
+	if err != nil {
+		return "", err
+	}
+
+	files, err := filepath.Glob(modulePath + "/*.go")
+
+	if err != nil {
+		return "", err
+	}
+
+	for _, f := range files {
+		f, err := os.Open(f)
+
+		if err != nil {
+			continue
+		}
+
+		defer f.Close()
+
+		scanner := bufio.NewScanner(f)
+
+		// read the first line
+		scanner.Scan()
+
+		// extract text for first line
+		line := scanner.Text()
+
+		// attempt to get the package name from file
+		if strings.HasPrefix(line, "package ") {
+			parts := strings.Split(line, " ")
+
+			if len(parts) != 2 {
+				continue
+			}
+			moduleName = strings.TrimSpace(parts[1])
+			break
+		}
+	}
+
+	if moduleName == "" {
+		return "", ErrEmptyString
+	}
+
+	return moduleName, nil
+}
+func LoadModule(modulePath string, prefix string) (*Module, error) {
+	var (
+		err    error
+		docStr []byte
+	)
+
 	mod := &Module{}
 
 	// if module does not have slash, assume it is a runtime mod
-	if strings.Count(packageName, "/") > 1 {
-		goPath := os.Getenv("GOPATH")
+	if strings.Count(modulePath, "/") > 1 {
+		if !checkIfDownloaded(modulePath) {
+			err = gitClone(modulePath)
 
-		if goPath == "" {
-			log.Println("GOPATH must be set")
-			return nil, ErrEmptyString
-		}
-
-		if !checkIfDownloaded(packageName) {
-			packageDir := path.Join(goPath, "src", packageName)
-
-			_ = os.MkdirAll(packageDir, 0o755)
-
-			gitURL := "https://" + packageName
-
-			_, err := git.PlainClone(packageDir, false, &git.CloneOptions{
-				URL:               gitURL,
-				RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
-			})
 			if err != nil {
-				log.Println("Fetching module failed: " + err.Error())
-				return nil, ErrCloneFailed
+				return nil, err
 			}
 		}
 	}
 
-	if strings.Contains(packageName, "@") {
-		parts := strings.Split(packageName, "@")
+	docStr, err = runGoDoc(modulePath)
 
-		if len(parts) > 0 {
-			packageName = parts[0]
-		}
-	}
-
-	godoc := exec.Command("go", "doc", "-all", packageName)
-	godoc.Env = os.Environ()
-	godoc.Env = append(godoc.Env, "GO111MODULE=off")
-
-	stdout, err := godoc.Output()
 	if err != nil {
-		log.Println(packageName + ": " + err.Error())
 		return nil, err
 	}
 
-	mod.raw = stdout
+	moduleName, err := getModuleName(modulePath)
 
-	mod.Name = packageName
+	if err != nil {
+		return nil, err
+	}
+
+	mod.raw = docStr
+	mod.Name = moduleName
+	mod.Path = modulePath
 	mod.Prefix = prefix
 
 	err = mod.parseDoc()
@@ -112,6 +192,10 @@ func LoadModule(packageName string, prefix string) (*Module, error) {
 
 func (mod *Module) GetName() string {
 	return mod.Name
+}
+
+func (mod *Module) GetPath() string {
+	return mod.Path
 }
 
 func (mod *Module) GetPrefix() string {
@@ -183,12 +267,14 @@ func (mod *Module) parseDoc() error {
 func derefFunction(f *Function) Function {
 	return *f
 }
+
 func (mod *Module) Generate() error {
 	customFuncs := map[string]any{
-		"benthosType": toBenthosType,
-		"function":    derefFunction,
-		"getModule":   mod.GetName,
-		"getPrefix":   mod.GetPrefix,
+		"benthosType":   toBenthosType,
+		"function":      derefFunction,
+		"getModulePath": mod.GetPath,
+		"getModuleName": mod.GetName,
+		"getPrefix":     mod.GetPrefix,
 	}
 
 	if len(mod.Map["function"]) > 0 {
