@@ -13,8 +13,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/42atomys/sprout"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-sprout/sprout"
 	"github.com/nibbleshift/mod2blob/internal/gen"
 	"mvdan.cc/gofumpt/format"
 )
