@@ -45,8 +45,8 @@ func (mod *Module) buildMap() error {
 	return nil
 }
 
-func gitClone(moduleUrl string) error {
-	packageDir, err := getModuleSrcPath(moduleUrl)
+func gitClone(moduleURL string) error {
+	packageDir, err := getModuleSrcPath(moduleURL)
 
 	if err != nil {
 		return err
@@ -54,7 +54,7 @@ func gitClone(moduleUrl string) error {
 
 	_ = os.MkdirAll(packageDir, 0755)
 
-	gitURL := "https://" + moduleUrl
+	gitURL := "https://" + moduleURL
 
 	_, err = git.PlainClone(packageDir, false, &git.CloneOptions{
 		URL:               gitURL,
@@ -81,26 +81,26 @@ func runGoDoc(modulePath string) ([]byte, error) {
 	return docStr, nil
 }
 
-func getModuleSrcPath(moduleUrl string) (string, error) {
+func getModuleSrcPath(moduleURL string) (string, error) {
 	goPath := os.Getenv("GOPATH")
 
 	if goPath == "" {
 		log.Println("GOPATH must be set")
 		return "", ErrEmptyString
 	}
-	return path.Join(goPath, "src", moduleUrl), nil
+	return path.Join(goPath, "src", moduleURL), nil
 }
 
-func getModuleName(moduleUrl string) (string, error) {
+func getModuleName(moduleURL string) (string, error) {
 	var moduleName string
 
 	// This should be better, if it is a runtime package
 	// then we dont need to look for the module name
-	if strings.Count(moduleUrl, "/") < 2 {
-		return moduleUrl, nil
+	if strings.Count(moduleURL, "/") < 2 {
+		return moduleURL, nil
 	}
 
-	modulePath, err := getModuleSrcPath(moduleUrl)
+	modulePath, err := getModuleSrcPath(moduleURL)
 
 	if err != nil {
 		return "", err
