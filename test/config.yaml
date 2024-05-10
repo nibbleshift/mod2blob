@@ -1,5 +1,9 @@
 logger:
-  level: ERROR
+  level: ALL
+
+http:
+  enabled: false
+
 input:
   generate:
     mapping: |

@@ -26,7 +26,6 @@
 #github.com/gonum/gonum/integrate/quad
 #github.com/gonum/gonum/mat
 #github.com/gonum/gonum/mathext/prng
-#github.com/gonum/gonum/mathext/prng
 #github.com/gonum/gonum/spatial/barneshut
 #github.com/gonum/gonum/spatial/curve
 #github.com/gonum/gonum/spatial/kdtree
@@ -52,7 +51,7 @@
 #github.com/alpeb/go-finance
 #github.com/MaxHalford/eaopt
 #github.com/spatial-go/geoos
-#github.com/montanaflynn/stats
+github.com/montanaflynn/stats
 #bytes
 #strings
 #text/template
