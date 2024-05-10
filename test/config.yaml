@@ -1,5 +1,5 @@
 logger:
-  level: error
+  level: ERROR
 input:
   generate:
     mapping: |
@@ -10,10 +10,6 @@ input:
 
 pipeline:
   processors:
-    - mapping: |
-        root = this
-        root.atan = atan2(200,5)
-        root.dim = dim(100,5)
-        root.fma = fma(22, 18, 48)
+    - resource: execute_map
 output:
   stdout: {}

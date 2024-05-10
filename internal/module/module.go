@@ -285,8 +285,9 @@ func (mod *Module) Generate() error {
 
 	if len(mod.Map["function"]) > 0 {
 		var (
-			err    error
-			source bytes.Buffer
+			err        error
+			source     bytes.Buffer
+			testSource bytes.Buffer
 		)
 		// generate functions
 		funcTmpl, err := template.New("function").
@@ -316,6 +317,31 @@ func (mod *Module) Generate() error {
 		defer f.Close()
 
 		_, err = f.Write(formatted)
+		if err != nil {
+			panic(err)
+		}
+
+		// generate test mapping
+		processorTmpl, err := template.New("processor").
+			Funcs(sprout.FuncMap()).
+			Funcs(customFuncs).
+			Parse(gen.Processor)
+		if err != nil {
+			panic(err)
+		}
+
+		err = processorTmpl.Execute(&testSource, mod.Map["function"])
+		if err != nil {
+			panic(err)
+		}
+
+		testFile, err := os.Create(mod.Name + ".yaml")
+		if err != nil {
+			panic(err)
+		}
+		defer testFile.Close()
+
+		_, err = testFile.Write(testSource.Bytes())
 		if err != nil {
 			panic(err)
 		}
