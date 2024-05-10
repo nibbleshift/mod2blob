@@ -24,6 +24,7 @@ func init() {
 	err = bloblang.RegisterFunctionV2("{{ getPrefix }}{{ lower .Name}}", object{{.Name}}Spec,
 		func(args *bloblang.ParsedParams) (bloblang.Function, error) {
 			{{- $argStr := "" -}}
+			{{- $returnVal := "" -}}
 			{{- range .Args -}}
 			{{- $bType := benthosType .Type }}
 			{{- $getType := $bType }}
@@ -45,8 +46,26 @@ func init() {
 			{{- end -}}
 			{{ end -}}
 
+			{{- range .Return -}}
+			{{- if eq $returnVal "" -}}
+			{{ $returnVal = (printf "%s" .Name) }}
+			{{ else }}
+			{{ $returnVal = (printf "%s, %s" $returnVal .Name) }}
+			{{- end -}}
+			{{- end -}}
+
 			return func() (interface{}, error) {
+				{{ $nReturn := len .Return }}
+				{{ if gt $nReturn 1 }}
+					{{$returnVal}} := {{getModuleName}}.{{$funcName}}({{ $argStr }})
+					obj := map[string]any{}
+					{{- range .Return }}
+					obj["{{.Name}}"] = {{.Name}}
+					{{- end }}
+					return obj, nil
+				{{ else }}
 				return {{getModuleName}}.{{$funcName}}({{ $argStr }}), nil
+				{{- end -}}
 			}, nil
 	})
 
