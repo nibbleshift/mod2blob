@@ -66,7 +66,10 @@ func checkIfDownloaded(packageName string) bool {
 }
 
 func parseReturn(arg string) (*Arg, error) {
-	var argType string
+	var (
+		argType string
+		argName string
+	)
 
 	// check for empty arg
 	if arg == "" {
@@ -83,6 +86,7 @@ func parseReturn(arg string) (*Arg, error) {
 		argType = parts[0]
 	case 2:
 		// argument type and name provided
+		argName = parts[0]
 		argType = parts[1]
 
 		if argType == "" {
@@ -94,6 +98,7 @@ func parseReturn(arg string) (*Arg, error) {
 
 	argObj := Arg{
 		Type: argType,
+		Name: argName,
 	}
 
 	return &argObj, nil
