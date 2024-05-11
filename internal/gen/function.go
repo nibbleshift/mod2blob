@@ -54,7 +54,7 @@ func init() {
 			{{- end -}}
 			{{- end -}}
 
-			return func() (interface{}, error) {
+			return func() (any, error) {
 				{{ $nReturn := len .Return }}
 				{{ if gt $nReturn 1 }}
 					{{$returnVal}} := {{getModuleName}}.{{$funcName}}({{ $argStr }})

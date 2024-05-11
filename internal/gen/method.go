@@ -39,7 +39,7 @@ func init() {
 			}
 			{{ end -}}
 
-			return func() (interface{}, error) {
+			return func() (any, error) {
 				return {{$moduleName}}.{{$funcName}}({{ $argStr }}), nil
 			}, nil
 	})
