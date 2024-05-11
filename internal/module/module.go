@@ -34,13 +34,13 @@ func (mod *Module) buildMap() error {
 
 	for _, f := range mod.Functions {
 		if !checkValidFunction(f) {
-			log.Printf("Skipped function %+v Args:%v Return:%v\n", f.Name, f.Args, f.Return)
+			log.Printf("%s: Skipped function %+v Args:%v Return:%v\n", mod.GetName(), f.Name, f.Args, f.Return)
 			continue
 		}
 
 		if len(f.Args) > 0 {
 			_ = mod.addToMap("function", f)
-			log.Printf("Added function %+v Args:%v Return:%v\n", f.Name, f.Args, f.Return)
+			log.Printf("%s: Added function %+v Args:%v Return:%v\n", mod.GetName(), f.Name, f.Args, f.Return)
 		}
 	}
 	return nil
@@ -119,22 +119,22 @@ func getModuleName(moduleURL string) (string, error) {
 
 		scanner := bufio.NewScanner(f)
 
-		// read the first line
-		scanner.Scan()
+		// read the file line by line
+		for scanner.Scan() {
+			// extract text for line
+			line := scanner.Text()
+			// attempt to get the package name from file
+			if strings.HasPrefix(line, "package ") {
+				parts := strings.Split(line, " ")
 
-		// extract text for first line
-		line := scanner.Text()
-
-		// attempt to get the package name from file
-		if strings.HasPrefix(line, "package ") {
-			parts := strings.Split(line, " ")
-
-			if len(parts) != 2 {
-				continue
+				if len(parts) != 2 {
+					continue
+				}
+				moduleName = strings.TrimSpace(parts[1])
+				break
 			}
-			moduleName = strings.TrimSpace(parts[1])
-			break
 		}
+
 	}
 
 	if moduleName == "" {

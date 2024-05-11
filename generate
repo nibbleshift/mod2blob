@@ -13,9 +13,9 @@ for i in `cat ../../modules`; do
 
 	../../mod2blob -module $i
 
-	if [ $? -ne 0 ]; then
-		break
-	fi
+#	if [ $? -ne 0 ]; then
+#		break
+#	fi
 done
 
 popd
