@@ -15,6 +15,7 @@ var native = []string{
 	"[]int", "[]uint", "[]int8", "[]uint8", "[]int16", "[]uint16", "[]int32", "[]uint32", "[]int64", "[]uint64",
 	"float", "[]float32", "[]float64",
 	"string", "[]byte", "[]rune", "[]bool",
+	"error",
 }
 
 // Check to see if function accepts and returns
@@ -28,11 +29,12 @@ func checkValidFunction(f *Function) bool {
 		return false
 	}
 
-	for _, r := range f.Return {
-		if !slices.Contains(native, r.Type) {
-			return false
-		}
-	}
+	/*
+		for _, r := range f.Return {
+			if !slices.Contains(native, r.Type) {
+				return false
+			}
+		}*/
 
 	for _, a := range f.Args {
 		if !slices.Contains(native, a.Type) {
@@ -79,21 +81,25 @@ func parseReturn(arg string) (*Arg, error) {
 	// remove trailing/leading space
 	arg = strings.TrimSpace(arg)
 
-	parts := strings.Split(arg, " ")
+	if strings.Contains(arg, " ") {
+		parts := strings.Split(arg, " ")
 
-	switch len(parts) {
-	case 1:
-		argType = parts[0]
-	case 2:
-		// argument type and name provided
-		argName = parts[0]
-		argType = parts[1]
+		switch len(parts) {
+		case 1:
+			argType = parts[0]
+		case 2:
+			// argument type and name provided
+			argName = parts[0]
+			argType = parts[1]
 
-		if argType == "" {
-			return nil, ErrInvalidFunction
+			if argType == "" {
+				return nil, ErrInvalidFunction
+			}
+		default:
+			return nil, ErrInvalidArguments
 		}
-	default:
-		return nil, ErrInvalidArguments
+	} else {
+		argType = arg
 	}
 
 	argObj := Arg{
@@ -230,6 +236,29 @@ func parseReturnArguments(args string) ([]Arg, error) {
 		}
 
 		argObjectList = append(argObjectList, *argObj)
+	}
+
+	// in some cases we need to resolve return types a bit,
+	// esp when there are multiple args but only the last
+	// specifies a return type
+	nArgs := len(argObjectList)
+
+	if nArgs > 1 {
+		lastType := ""
+
+		for i := nArgs - 1; i >= 0; i-- {
+			if i == nArgs-1 {
+				if argObjectList[i].Name == "" {
+					break
+				}
+				lastType = argObjectList[i].Type
+			} else if argObjectList[i].Name == "" && argObjectList[i].Type != "" {
+				// fix the case: func Test() (one, two float64)
+				argObjectList[i].Name = argObjectList[i].Type
+				argObjectList[i].Type = lastType
+			}
+
+		}
 	}
 
 	// remove "( )" around the args if it is present
