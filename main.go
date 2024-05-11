@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	Module string `default:"" description:"Name of a go module such as 'math' or 'strings'"`
-	Prefix string `default:"" description:"Prefix to use for function names. Format: [a-Z0-9]"`
-	Debug  bool   `default:"false" description:"Enable debug logging"`
+	Module    string `default:"" description:"Name of a go module such as 'math' or 'strings'"`
+	Prefix    string `default:"" description:"Prefix to use for function names. Format: [a-Z0-9]"`
+	Debug     bool   `default:"false" description:"Enable debug logging"`
+	OutputDir string `default:"." description:"Directory to write generated code to"`
 }
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 		return
 	}
 
-	err = pkg.Generate()
+	err = pkg.Generate(config.OutputDir)
 	if err != nil {
 		log.Println("Generate: " + err.Error())
 		return

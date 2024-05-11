@@ -274,7 +274,7 @@ func derefFunction(f *Function) Function {
 	return *f
 }
 
-func (mod *Module) Generate() error {
+func (mod *Module) Generate(outputDir string) error {
 	customFuncs := map[string]any{
 		"benthosType":   toBenthosType,
 		"function":      derefFunction,
@@ -310,7 +310,7 @@ func (mod *Module) Generate() error {
 			panic(err)
 		}
 
-		f, err := os.Create(getFileName(mod.Name))
+		f, err := os.Create(path.Join(outputDir, getFileName(mod.Name)))
 		if err != nil {
 			panic(err)
 		}
@@ -335,7 +335,7 @@ func (mod *Module) Generate() error {
 			panic(err)
 		}
 
-		testFile, err := os.Create(mod.Name + ".yaml")
+		testFile, err := os.Create(path.Join(outputDir, mod.Name+".yaml"))
 		if err != nil {
 			panic(err)
 		}
