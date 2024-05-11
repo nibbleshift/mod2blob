@@ -307,7 +307,6 @@ func (mod *Module) Generate() error {
 
 		formatted, err = format.Source(source.Bytes(), format.Options{ExtraRules: true})
 		if err != nil {
-			fmt.Println(string(source.Bytes()))
 			panic(err)
 		}
 
