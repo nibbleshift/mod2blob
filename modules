@@ -74,9 +74,12 @@
 #github.com/gonum/gonum/stat/combin
 #github.com/gyuho/goraph
 #github.com/h2non/filetype
+#github.com/HamZone/TLESatellite
 #github.com/hbollon/go-edlib
+#github.com/jonas-p/go-shp
 #github.com/joshuaferrara/go-satellite
 #github.com/leekchan/accounting
+#github.com/lukeroth/gdal
 #github.com/maddyblue/go-dsp/fft
 #github.com/maddyblue/go-dsp/spectral
 #github.com/maddyblue/go-dsp/wav
