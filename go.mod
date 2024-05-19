@@ -4,7 +4,7 @@ go 1.22.2
 
 require (
 	github.com/go-git/go-git/v5 v5.12.0
-	github.com/go-sprout/sprout v0.3.0
+	github.com/go-sprout/sprout v0.4.0
 	github.com/nibbleshift/argenv v0.7.2
 	gotest.tools/v3 v3.5.1
 	mvdan.cc/gofumpt v0.6.0
@@ -39,4 +39,5 @@ require (
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/tools v0.21.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
+	sigs.k8s.io/yaml v1.4.0 // indirect
 )
